@@ -18,6 +18,20 @@ CREATE TABLE IF NOT EXISTS modules (
     published    BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE OR REPLACE FUNCTION update_modules_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_modules_updated_at ON modules;
+CREATE TRIGGER trg_modules_updated_at
+    BEFORE UPDATE ON modules
+    FOR EACH ROW
+    EXECUTE FUNCTION update_modules_timestamp();
+
 -- 3) AULAS (VÍDEOS)
 CREATE TABLE IF NOT EXISTS lessons (
     id           BIGSERIAL PRIMARY KEY,
