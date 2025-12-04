@@ -21,7 +21,7 @@ public class Module {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @Column(name = "created_at")
