@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.module;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,12 +30,12 @@ public class ModuleController {
     }
 
     @PostMapping
-    public Module create(@RequestBody Module module) {
+    public Module create(@Valid @RequestBody Module module) {
         return repository.save(module);
     }
 
     @PutMapping("/{id}")
-    public Module update(@PathVariable Long id, @RequestBody Module module) {
+    public Module update(@PathVariable Long id, @Valid @RequestBody Module module) {
         Module existing = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         existing.setTitle(module.getTitle());

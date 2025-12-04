@@ -3,6 +3,8 @@ package br.unioeste.mu.mu_backend.lesson;
 import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "lessons")
@@ -12,15 +14,19 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
     @Column(name = "video_url")
+    @NotBlank(message = "Video URL is required")
     private String videoUrl;
 
-    private int position;
+    @NotNull(message = "Position is required")
+    private Integer position;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
+    @NotNull(message = "Module is required")
     @JsonIgnore
     private Module module;
 
@@ -47,11 +53,11 @@ public class Lesson {
         this.videoUrl = videoUrl;
     }
 
-    public int getPosition() {
+    public Integer getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(Integer position) {
         this.position = position;
     }
 

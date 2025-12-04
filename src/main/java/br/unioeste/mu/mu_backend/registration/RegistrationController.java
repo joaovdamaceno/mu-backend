@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.registration;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public Registration create(@RequestBody Registration request) {
+    public Registration create(@Valid @RequestBody Registration request) {
         return repository.save(request);
     }
 

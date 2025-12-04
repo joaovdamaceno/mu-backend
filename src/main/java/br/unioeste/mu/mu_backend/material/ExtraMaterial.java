@@ -3,6 +3,8 @@ package br.unioeste.mu.mu_backend.material;
 import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "extra_materials")
@@ -12,12 +14,15 @@ public class ExtraMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
+    @NotBlank(message = "Link is required")
     private String link;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
+    @NotNull(message = "Module is required")
     @JsonIgnore
     private Module module;
 

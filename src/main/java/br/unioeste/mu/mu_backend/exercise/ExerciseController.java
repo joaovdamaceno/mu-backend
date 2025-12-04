@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.exercise;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +30,7 @@ public class ExerciseController {
     }
 
     @PostMapping
-    public Exercise create(@PathVariable Long moduleId, @RequestBody Exercise exercise) {
+    public Exercise create(@PathVariable Long moduleId, @Valid @RequestBody Exercise exercise) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         exercise.setModule(module);
