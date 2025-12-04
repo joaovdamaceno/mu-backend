@@ -2,7 +2,9 @@ package br.unioeste.mu.mu_backend.lesson;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,13 +23,15 @@ public class LessonController {
 
     @GetMapping
     public List<Lesson> list(@PathVariable Long moduleId) {
-        Module module = moduleRepository.findById(moduleId).orElseThrow();
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return lessonRepository.findByModuleOrderByPositionAsc(module);
     }
 
     @PostMapping
     public Lesson create(@PathVariable Long moduleId, @RequestBody Lesson lesson) {
-        Module module = moduleRepository.findById(moduleId).orElseThrow();
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         lesson.setModule(module);
         return lessonRepository.save(lesson);
     }
