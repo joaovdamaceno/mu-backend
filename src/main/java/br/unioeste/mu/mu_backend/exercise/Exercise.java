@@ -3,6 +3,8 @@ package br.unioeste.mu.mu_backend.exercise;
 import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "exercises")
@@ -12,14 +14,18 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
+    @NotBlank(message = "Link is required")
     private String link;
 
-    private short difficulty;
+    @NotNull(message = "Difficulty is required")
+    private Short difficulty;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
+    @NotNull(message = "Module is required")
     @JsonIgnore
     private Module module;
 
@@ -46,11 +52,11 @@ public class Exercise {
         this.link = link;
     }
 
-    public short getDifficulty() {
+    public Short getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(short difficulty) {
+    public void setDifficulty(Short difficulty) {
         this.difficulty = difficulty;
     }
 

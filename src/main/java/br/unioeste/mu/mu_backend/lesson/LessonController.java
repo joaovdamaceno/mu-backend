@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.lesson;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +30,7 @@ public class LessonController {
     }
 
     @PostMapping
-    public Lesson create(@PathVariable Long moduleId, @RequestBody Lesson lesson) {
+    public Lesson create(@PathVariable Long moduleId, @Valid @RequestBody Lesson lesson) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         lesson.setModule(module);
