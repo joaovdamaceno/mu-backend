@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS registrations (
     id           BIGSERIAL PRIMARY KEY,
     name         VARCHAR(150) NOT NULL,
-    email        VARCHAR(150) NOT NULL,
+    email        VARCHAR(150) NOT NULL UNIQUE,
     whatsapp     VARCHAR(50),
     institution  VARCHAR(150),
     created_at   TIMESTAMP NOT NULL DEFAULT NOW()

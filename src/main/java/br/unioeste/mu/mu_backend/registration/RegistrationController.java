@@ -1,7 +1,10 @@
 package br.unioeste.mu.mu_backend.registration;
 
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,7 +21,15 @@ public class RegistrationController {
 
     @PostMapping
     public Registration create(@Valid @RequestBody Registration request) {
-        return repository.save(request);
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+        }
+
+        try {
+            return repository.save(request);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered", ex);
+        }
     }
 
     @GetMapping
