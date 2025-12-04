@@ -14,7 +14,7 @@ public class PostSection {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     private int position;
