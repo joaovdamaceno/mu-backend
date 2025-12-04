@@ -22,8 +22,7 @@ public class Post {
     @Column(name = "cover_image_url")
     private String coverImageUrl;
 
-    @Lob
-    @Column(name = "main_text")
+    @Column(name = "main_text", columnDefinition = "TEXT")
     private String mainText;
 
     @Column(name = "created_at")
