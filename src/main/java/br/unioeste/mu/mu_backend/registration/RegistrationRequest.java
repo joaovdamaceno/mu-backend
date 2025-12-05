@@ -1,28 +1,18 @@
 package br.unioeste.mu.mu_backend.registration;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "registrations")
-public class Registration {
+public class RegistrationRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank(message = "Name is required")
-    private String name;
+    @NotBlank(message = "Full name is required")
+    private String fullName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
-    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "University is required")
-    @Column(name = "institution")
     private String university;
 
     @NotBlank(message = "Campus is required")
@@ -43,27 +33,27 @@ public class Registration {
 
     private String whatsapp;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    public Registration toRegistration() {
+        Registration registration = new Registration();
+        registration.setName(this.fullName);
+        registration.setEmail(this.email);
+        registration.setUniversity(this.university);
+        registration.setCampus(this.campus);
+        registration.setCourse(this.course);
+        registration.setSemester(this.semester);
+        registration.setHowDidYouHear(this.howDidYouHear);
+        registration.setPreviousExperience(this.previousExperience);
+        registration.setMessage(this.message);
+        registration.setWhatsapp(this.whatsapp);
+        return registration;
     }
 
-    public Registration() {
+    public String getFullName() {
+        return fullName;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -136,9 +126,5 @@ public class Registration {
 
     public void setWhatsapp(String whatsapp) {
         this.whatsapp = whatsapp;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }
