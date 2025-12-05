@@ -62,8 +62,12 @@ CREATE TABLE IF NOT EXISTS extra_materials (
 CREATE TABLE IF NOT EXISTS posts (
     id               BIGSERIAL PRIMARY KEY,
     title            VARCHAR(200) NOT NULL,
+    slug             VARCHAR(200),
+    summary          TEXT,
     tag              VARCHAR(50),
     cover_image_url  TEXT,
+    author_name      VARCHAR(200),
+    status           VARCHAR(50),
     main_text        TEXT,
     created_at       TIMESTAMP NOT NULL DEFAULT NOW()
 );
