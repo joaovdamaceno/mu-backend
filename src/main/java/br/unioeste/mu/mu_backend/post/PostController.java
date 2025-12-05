@@ -40,6 +40,30 @@ public class PostController {
         return postRepository.save(post);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> update(@PathVariable Long id, @RequestBody Post updatedPost) {
+        return postRepository.findById(id)
+                .map(post -> {
+                    post.setTitle(updatedPost.getTitle());
+                    post.setSlug(updatedPost.getSlug());
+                    post.setSummary(updatedPost.getSummary());
+                    post.setCoverImageUrl(updatedPost.getCoverImageUrl());
+                    post.setAuthorName(updatedPost.getAuthorName());
+                    post.setStatus(updatedPost.getStatus());
+
+                    post.getSections().clear();
+                    if (updatedPost.getSections() != null) {
+                        for (PostSection section : updatedPost.getSections()) {
+                            section.setPost(post);
+                            post.getSections().add(section);
+                        }
+                    }
+
+                    return ResponseEntity.ok(postRepository.save(post));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         postRepository.deleteById(id);
