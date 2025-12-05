@@ -26,14 +26,14 @@ public class LessonController {
     public List<Lesson> list(@PathVariable Long moduleId) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return lessonRepository.findByModuleOrderByPositionAsc(module);
+        return lessonRepository.findByModuleOrderByOrderIndexAsc(module);
     }
 
     @PostMapping
-    public Lesson create(@PathVariable Long moduleId, @Valid @RequestBody Lesson lesson) {
+    public Lesson create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        lesson.setModule(module);
+        Lesson lesson = request.toLesson(module);
         return lessonRepository.save(lesson);
     }
 }
