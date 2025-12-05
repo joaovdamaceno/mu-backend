@@ -1,0 +1,3 @@
+ALTER TABLE lessons
+    ADD COLUMN slug VARCHAR(200),
+    ADD COLUMN summary TEXT;
