@@ -1,0 +1,5 @@
+ALTER TABLE posts
+    ADD COLUMN slug VARCHAR(200),
+    ADD COLUMN summary TEXT,
+    ADD COLUMN author_name VARCHAR(200),
+    ADD COLUMN status VARCHAR(50);
