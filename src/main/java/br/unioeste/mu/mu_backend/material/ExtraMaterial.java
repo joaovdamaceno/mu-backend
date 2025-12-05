@@ -1,6 +1,6 @@
 package br.unioeste.mu.mu_backend.material;
 
-import br.unioeste.mu.mu_backend.module.Module;
+import br.unioeste.mu.mu_backend.lesson.Lesson;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -14,17 +14,17 @@ public class ExtraMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Title is required")
-    private String title;
+    @NotBlank(message = "Type is required")
+    private String type;
 
-    @NotBlank(message = "Link is required")
-    private String link;
+    @NotBlank(message = "URL is required")
+    private String url;
 
     @ManyToOne
-    @JoinColumn(name = "module_id")
-    @NotNull(message = "Module is required")
+    @JoinColumn(name = "lesson_id")
+    @NotNull(message = "Lesson is required")
     @JsonIgnore
-    private Module module;
+    private Lesson lesson;
 
     public ExtraMaterial() {
     }
@@ -33,27 +33,27 @@ public class ExtraMaterial {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getType() {
+        return type;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getLink() {
-        return link;
+    public String getUrl() {
+        return url;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public Module getModule() {
-        return module;
+    public Lesson getLesson() {
+        return lesson;
     }
 
-    public void setModule(Module module) {
-        this.module = module;
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 }

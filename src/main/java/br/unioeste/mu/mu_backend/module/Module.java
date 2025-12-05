@@ -2,7 +2,6 @@ package br.unioeste.mu.mu_backend.module;
 
 import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.exercise.Exercise;
-import br.unioeste.mu.mu_backend.material.ExtraMaterial;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -37,9 +36,6 @@ public class Module {
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Exercise> exercises = new ArrayList<>();
-
-    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExtraMaterial> extraMaterials = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
@@ -98,9 +94,5 @@ public class Module {
 
     public List<Exercise> getExercises() {
         return exercises;
-    }
-
-    public List<ExtraMaterial> getExtraMaterials() {
-        return extraMaterials;
     }
 }
