@@ -1,7 +1,7 @@
 package br.unioeste.mu.mu_backend.material;
 
-import br.unioeste.mu.mu_backend.module.Module;
-import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.lesson.Lesson;
+import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,30 +10,30 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/modules/{moduleId}/materials")
+@RequestMapping("/api/lessons/{lessonId}/materials")
 @CrossOrigin
 public class ExtraMaterialController {
 
     private final ExtraMaterialRepository extraMaterialRepository;
-    private final ModuleRepository moduleRepository;
+    private final LessonRepository lessonRepository;
 
-    public ExtraMaterialController(ExtraMaterialRepository extraMaterialRepository, ModuleRepository moduleRepository) {
+    public ExtraMaterialController(ExtraMaterialRepository extraMaterialRepository, LessonRepository lessonRepository) {
         this.extraMaterialRepository = extraMaterialRepository;
-        this.moduleRepository = moduleRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     @GetMapping
-    public List<ExtraMaterial> list(@PathVariable Long moduleId) {
-        Module module = moduleRepository.findById(moduleId)
+    public List<ExtraMaterial> list(@PathVariable Long lessonId) {
+        Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return extraMaterialRepository.findByModule(module);
+        return extraMaterialRepository.findByLesson(lesson);
     }
 
     @PostMapping
-    public ExtraMaterial create(@PathVariable Long moduleId, @Valid @RequestBody ExtraMaterial material) {
-        Module module = moduleRepository.findById(moduleId)
+    public ExtraMaterial create(@PathVariable Long lessonId, @Valid @RequestBody ExtraMaterialRequest request) {
+        Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        material.setModule(module);
+        ExtraMaterial material = request.toExtraMaterial(lesson);
         return extraMaterialRepository.save(material);
     }
 }
