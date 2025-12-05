@@ -20,13 +20,13 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public Registration create(@Valid @RequestBody Registration request) {
+    public Registration create(@Valid @RequestBody RegistrationRequest request) {
         if (repository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
         }
 
         try {
-            return repository.save(request);
+            return repository.save(request.toRegistration());
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered", ex);
         }
