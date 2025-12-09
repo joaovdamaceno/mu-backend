@@ -11,9 +11,10 @@ SET difficulty = CASE difficulty
     WHEN '0' THEN 'EASY'
     WHEN '1' THEN 'MEDIUM'
     WHEN '2' THEN 'HARD'
-    WHEN 0 THEN 'EASY'
-    WHEN 1 THEN 'MEDIUM'
-    WHEN 2 THEN 'HARD'
+    -- In case some rows were already coerced into textual values without quotes
+    WHEN 'EASY' THEN 'EASY'
+    WHEN 'MEDIUM' THEN 'MEDIUM'
+    WHEN 'HARD' THEN 'HARD'
     ELSE difficulty
 END;
 
