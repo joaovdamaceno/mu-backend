@@ -7,7 +7,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
-@CrossOrigin
+@CrossOrigin(
+        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class PostController {
 
     private final PostRepository postRepository;
