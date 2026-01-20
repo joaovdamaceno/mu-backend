@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, length = 50)
     private UserRole role = UserRole.USER;
 
-    @Column(name = "creatded_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() { return id; }
