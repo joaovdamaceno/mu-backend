@@ -30,21 +30,24 @@ public class ExerciseController {
     }
 
     @GetMapping
-    public List<Exercise> list(@PathVariable Long moduleId, @PathVariable Long lessonId) {
+    public List<ExerciseResponse> list(@PathVariable Long moduleId, @PathVariable Long lessonId) {
         findModule(moduleId);
         Lesson lesson = findLesson(lessonId);
         validateLessonBelongsToModule(moduleId, lesson);
-        return exerciseRepository.findByLesson(lesson);
+        return exerciseRepository.findByLesson(lesson)
+                .stream()
+                .map(ExerciseResponse::from)
+                .toList();
     }
 
     @PostMapping
-    public Exercise create(@PathVariable Long moduleId, @PathVariable Long lessonId, @Valid @RequestBody ExerciseRequest request) {
+    public ExerciseResponse create(@PathVariable Long moduleId, @PathVariable Long lessonId, @Valid @RequestBody ExerciseRequest request) {
         Module module = findModule(moduleId);
         Lesson lesson = findLesson(lessonId);
         validateLessonBelongsToModule(moduleId, lesson);
 
         Exercise exercise = request.toExercise(module, lesson);
-        return exerciseRepository.save(exercise);
+        return ExerciseResponse.from(exerciseRepository.save(exercise));
     }
 
     private Module findModule(Long moduleId) {
