@@ -9,7 +9,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/modules")
-@CrossOrigin
+@CrossOrigin(
+        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class ModuleController {
 
     private final ModuleRepository repository;

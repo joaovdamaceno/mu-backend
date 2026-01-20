@@ -11,7 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/lessons/{lessonId}/materials")
-@CrossOrigin
+@CrossOrigin(
+        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
+        methods = {RequestMethod.GET, RequestMethod.POST}
+)
 public class ExtraMaterialController {
 
     private final ExtraMaterialRepository extraMaterialRepository;
