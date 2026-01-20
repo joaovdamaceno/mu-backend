@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -15,7 +16,14 @@ public class JwtService {
     private final long expirationMs;
 
     public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        String normalizedSecret = secret == null ? "" : secret.trim();
+        if (normalizedSecret.isEmpty()) {
+            throw new IllegalStateException("Missing required configuration: jwt.secret must be set and non-blank.");
+        }
+        if (normalizedSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("Invalid configuration: jwt.secret must be at least 32 bytes for HS256.");
+        }
+        this.key = Keys.hmacShaKeyFor(normalizedSecret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 
