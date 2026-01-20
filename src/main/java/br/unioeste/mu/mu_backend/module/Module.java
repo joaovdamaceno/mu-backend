@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.module;
 
 import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.exercise.Exercise;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -32,9 +33,11 @@ public class Module {
     private boolean published = true;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Lesson> lessons = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Exercise> exercises = new ArrayList<>();
 
     @PrePersist

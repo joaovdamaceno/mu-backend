@@ -26,17 +26,20 @@ public class LessonController {
     }
 
     @GetMapping
-    public List<Lesson> list(@PathVariable Long moduleId) {
+    public List<LessonResponse> list(@PathVariable Long moduleId) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return lessonRepository.findByModuleOrderByOrderIndexAsc(module);
+        return lessonRepository.findByModuleOrderByOrderIndexAsc(module)
+                .stream()
+                .map(LessonResponse::from)
+                .toList();
     }
 
     @PostMapping
-    public Lesson create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
+    public LessonResponse create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Lesson lesson = request.toLesson(module);
-        return lessonRepository.save(lesson);
+        return LessonResponse.from(lessonRepository.save(lesson));
     }
 }

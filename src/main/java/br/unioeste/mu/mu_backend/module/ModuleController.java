@@ -22,30 +22,32 @@ public class ModuleController {
     }
 
     @GetMapping
-    public Page<Module> list(@RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "20") int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public Page<ModuleResponse> list(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "20") int size) {
+        return repository.findAll(PageRequest.of(page, size))
+                .map(ModuleResponse::from);
     }
 
     @GetMapping("/{id}")
-    public Module get(@PathVariable Long id) {
+    public ModuleResponse get(@PathVariable Long id) {
         return repository.findById(id)
+                .map(ModuleResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    public Module create(@Valid @RequestBody Module module) {
-        return repository.save(module);
+    public ModuleResponse create(@Valid @RequestBody Module module) {
+        return ModuleResponse.from(repository.save(module));
     }
 
     @PutMapping("/{id}")
-    public Module update(@PathVariable Long id, @Valid @RequestBody Module module) {
+    public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody Module module) {
         Module existing = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         existing.setTitle(module.getTitle());
         existing.setNotes(module.getNotes());
         existing.setPublished(module.isPublished());
-        return repository.save(existing);
+        return ModuleResponse.from(repository.save(existing));
     }
 
     @DeleteMapping("/{id}")
