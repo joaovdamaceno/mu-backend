@@ -1,9 +1,9 @@
 package br.unioeste.mu.mu_backend.post;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -22,8 +22,9 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> list() {
-        return postRepository.findAll();
+    public Page<Post> list(@RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "20") int size) {
+        return postRepository.findAll(PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
