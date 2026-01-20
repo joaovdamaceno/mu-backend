@@ -1,11 +1,11 @@
 package br.unioeste.mu.mu_backend.module;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/modules")
@@ -22,8 +22,9 @@ public class ModuleController {
     }
 
     @GetMapping
-    public List<Module> list() {
-        return repository.findAll();
+    public Page<Module> list(@RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "20") int size) {
+        return repository.findAll(PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
