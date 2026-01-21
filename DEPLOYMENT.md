@@ -19,5 +19,5 @@ credentials and JWT signing secrets before deploying.
 Copy the example env file and update with real secrets:
 
 ```bash
-cp .env.example .env
+cp .env .env
 ```
