@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.auth;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    @Operation(summary = "Authenticate user and generate JWT", security = {})
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest req) {
 
