@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SeededAuthenticationTest {
@@ -29,8 +30,8 @@ class SeededAuthenticationTest {
 
         assertTrue(migrationSeed.contains("admin"));
         assertTrue(migrationSeed.contains(SEEDED_BCRYPT_HASH));
-        assertTrue(populateSeed.contains("admin"));
-        assertTrue(populateSeed.contains(SEEDED_BCRYPT_HASH));
+        assertFalse(populateSeed.contains("INSERT INTO users"));
+        assertFalse(populateSeed.contains(SEEDED_BCRYPT_HASH));
     }
 
 }
