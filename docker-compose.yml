@@ -49,7 +49,7 @@ services:
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-mu}
       DB_USERNAME: ${POSTGRES_USER:-mu}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-mu}
-      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-32-char-secret}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-very-secure-32-char-secret}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
     ports:
       - "8080:8080"
