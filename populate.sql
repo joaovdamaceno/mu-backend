@@ -3,14 +3,6 @@
 
 BEGIN;
 
--- Garante existência da tabela de tags (alguns ambientes podem não ter aplicado a migration V5)
-CREATE TABLE IF NOT EXISTS exercise_tags (
-    exercise_id BIGINT NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
-    tag         VARCHAR(100) NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_exercise_tags_exercise_id ON exercise_tags(exercise_id);
-
 -- Limpa dados existentes para permitir reexecução do script
 TRUNCATE TABLE
     exercise_tags,
