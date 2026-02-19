@@ -19,8 +19,8 @@ RESTART IDENTITY CASCADE;
 -- Usuários
 INSERT INTO users (username, password_hash, role)
 VALUES
-    ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN'), -- senha: password
-    ('aluno', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER');
+    ('admin', '$2a$10$abcdefghijklmnopqrstuu5Lo0g67CiD3M4RpN1BmBb4Crp5w7dbK', 'ADMIN'), -- senha: password
+    ('aluno', '$2a$10$abcdefghijklmnopqrstuu5Lo0g67CiD3M4RpN1BmBb4Crp5w7dbK', 'USER');
 
 -- Módulos
 INSERT INTO modules (title, notes, published)
