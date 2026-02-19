@@ -22,6 +22,11 @@ As seeds de autenticação criam os usuários:
 > Em ambiente real, altere imediatamente a senha padrão (especialmente de `admin`)
 > e utilize segredos exclusivos por ambiente.
 
+## Banco e dados iniciais
+
+- O Flyway cria/atualiza o schema e também semeia os usuários de autenticação padrão (`admin` e `aluno`) via migration versionada.
+- O `populate.sql` preenche apenas dados de conteúdo/domínio (módulos, aulas, exercícios, posts e inscrições) e não altera a tabela `users`.
+
 ## Secret rotation
 
 Any previously committed secrets should be considered compromised. Rotate database
