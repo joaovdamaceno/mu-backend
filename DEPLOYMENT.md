@@ -19,5 +19,21 @@ credentials and JWT signing secrets before deploying.
 Copy the example env file and update with real secrets:
 
 ```bash
-cp .env .env
+cp .env.example .env
 ```
+
+## Docker Compose
+
+1. Copy the environment file template:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update values (especially `JWT_SECRET` and PostgreSQL credentials).
+3. Start services:
+   ```bash
+   docker compose up --build -d
+   ```
+4. Stop services:
+   ```bash
+   docker compose down
+   ```

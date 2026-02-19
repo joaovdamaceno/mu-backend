@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mu-backend-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mu}
+      POSTGRES_USER: ${POSTGRES_USER:-mu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mu}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mu} -d ${POSTGRES_DB:-mu}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mu-backend-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-mu}
+      DB_USERNAME: ${POSTGRES_USER:-mu}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-mu}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-32-char-secret}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
