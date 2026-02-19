@@ -10,6 +10,18 @@ Provide these variables to configure the application in all environments:
 - `JWT_SECRET`: HMAC signing secret (use a rotated value of at least 32 characters).
 - `SERVER_PORT` (optional): HTTP port for the Spring Boot server (defaults to `8080`).
 
+
+## Credenciais padrão (ambiente de desenvolvimento)
+
+As seeds de autenticação criam os usuários:
+
+- `admin` / `password` (perfil `ADMIN`)
+- `aluno` / `password` (perfil `USER`)
+
+> **Importante:** essas credenciais são apenas para bootstrap local/homologação.
+> Em ambiente real, altere imediatamente a senha padrão (especialmente de `admin`)
+> e utilize segredos exclusivos por ambiente.
+
 ## Secret rotation
 
 Any previously committed secrets should be considered compromised. Rotate database
