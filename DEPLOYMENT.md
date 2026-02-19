@@ -22,6 +22,13 @@ Copy the example env file and update with real secrets:
 cp .env.example .env
 ```
 
+
+## IntelliJ local run support
+
+The application now imports values from a project-root `.env` file automatically via
+Spring Boot config import. With this in place, IntelliJ run configurations no longer
+need manual environment-variable entries for local development.
+
 ## Docker Compose
 
 1. Copy the environment file template:
