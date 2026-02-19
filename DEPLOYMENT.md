@@ -8,6 +8,7 @@ Provide these variables to configure the application in all environments:
 - `DB_USERNAME`: Database username.
 - `DB_PASSWORD`: Database password.
 - `JWT_SECRET`: HMAC signing secret (use a rotated value of at least 32 characters).
+- `SERVER_PORT` (optional): HTTP port for the Spring Boot server (defaults to `8080`).
 
 ## Secret rotation
 
@@ -17,6 +18,8 @@ credentials and JWT signing secrets before deploying.
 ## Example
 
 Copy the example env file and update with real secrets:
+
+If port `8080` is already in use locally, set `SERVER_PORT` in `.env` (for example `SERVER_PORT=8081`) before starting the app.
 
 ```bash
 cp .env.example .env
