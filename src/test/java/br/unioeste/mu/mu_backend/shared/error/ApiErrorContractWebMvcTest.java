@@ -72,10 +72,10 @@ class ApiErrorContractWebMvcTest {
                 .andExpect(jsonPath("$.message").value("Falha de validação dos dados enviados."))
                 .andExpect(jsonPath("$.path").value("/api/posts"))
                 .andExpect(jsonPath("$.details").isArray())
-                .andExpect(jsonPath("$.details[?(@.field=='title')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='slug')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='authorName')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='status')]").isNotEmpty());
+                .andExpect(jsonPath("$.details[?(@.field=='title' && @.message=='Título é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='slug' && @.message=='Slug deve conter apenas letras minúsculas, números e hífens' && @.rejectedValue=='INVALID SLUG')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='authorName' && @.message=='Autor é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='status' && @.message=='Status é obrigatório' && @.rejectedValue=='')]").isNotEmpty());
     }
 
     @Test
@@ -100,7 +100,9 @@ class ApiErrorContractWebMvcTest {
                 .andExpect(jsonPath("$.message").value("Corpo da requisição inválido."))
                 .andExpect(jsonPath("$.path").value("/api/modules/1/lessons/1/exercises"))
                 .andExpect(jsonPath("$.details").isArray())
-                .andExpect(jsonPath("$.details[0].field").value("difficulty"));
+                .andExpect(jsonPath("$.details[0].field").value("difficulty"))
+                .andExpect(jsonPath("$.details[0].message").value("Valor inválido para o campo 'difficulty'. Valores aceitos: [EASY, MEDIUM, HARD]."))
+                .andExpect(jsonPath("$.details[0].rejectedValue").value("VERY_HARD"));
     }
 
     @Test
