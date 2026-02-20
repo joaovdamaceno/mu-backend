@@ -4,10 +4,10 @@ import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -52,17 +52,17 @@ public class ExerciseController {
 
     private Module findModule(Long moduleId) {
         return moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
     }
 
     private Lesson findLesson(Long lessonId) {
         return lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
+                .orElseThrow(() -> new NotFoundException("Lição não encontrada para id=" + lessonId));
     }
 
     private void validateLessonBelongsToModule(Long moduleId, Lesson lesson) {
         if (lesson.getModule() == null || !lesson.getModule().getId().equals(moduleId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lesson does not belong to the specified module");
+            throw new BusinessValidationException("Lição id=" + lesson.getId() + " não pertence ao módulo id=" + moduleId);
         }
     }
 }

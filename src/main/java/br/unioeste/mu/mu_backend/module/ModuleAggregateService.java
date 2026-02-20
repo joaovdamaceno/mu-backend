@@ -10,10 +10,10 @@ import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateResponse;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
-import org.springframework.http.HttpStatus;
+import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
+import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -107,12 +107,12 @@ public class ModuleAggregateService {
             }
 
             if (!usedOrderIndexes.add(orderIndex)) {
-                throw invalidPayload("orderIndex duplicado para lições do módulo: " + orderIndex);
+                throw duplicatedResource("orderIndex duplicado para lições do módulo: " + orderIndex);
             }
 
             String normalizedSlug = lesson.getSlug().trim().toLowerCase();
             if (!usedSlugs.add(normalizedSlug)) {
-                throw invalidPayload("slug duplicado para lições do módulo: " + lesson.getSlug().trim());
+                throw duplicatedResource("slug duplicado para lições do módulo: " + lesson.getSlug().trim());
             }
         }
     }
@@ -123,7 +123,11 @@ public class ModuleAggregateService {
         }
     }
 
-    private ResponseStatusException invalidPayload(String message) {
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+    private BusinessValidationException invalidPayload(String message) {
+        return new BusinessValidationException(message);
+    }
+
+    private ConflictException duplicatedResource(String message) {
+        return new ConflictException(message);
     }
 }

@@ -1,5 +1,8 @@
 package br.unioeste.mu.mu_backend.shared.error;
 
+import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
+import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +31,39 @@ public class GlobalExceptionHandler {
     private static final Set<String> SENSITIVE_FIELD_NAMES = Set.of(
             "password", "token", "secret", "authorization", "accessToken", "refreshToken"
     );
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                ErrorCode.RESOURCE_NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+    }
+
+    @ExceptionHandler(BusinessValidationException.class)
+    public ResponseEntity<ApiError> handleBusinessValidationException(BusinessValidationException ex, HttpServletRequest request) {
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                ErrorCode.BUSINESS_VALIDATION,
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                ErrorCode.CONFLICT,
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiError> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
