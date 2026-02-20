@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/modules")
-@CrossOrigin(
-        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
 public class ModuleController {
 
     private final ModuleRepository repository;

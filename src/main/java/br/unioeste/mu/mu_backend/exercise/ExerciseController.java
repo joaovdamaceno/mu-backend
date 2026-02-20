@@ -13,10 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/modules/{moduleId}/lessons/{lessonId}/exercises")
-@CrossOrigin(
-        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
-        methods = {RequestMethod.GET, RequestMethod.POST}
-)
 public class ExerciseController {
 
     private final ExerciseRepository exerciseRepository;
