@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping({"/api/modules/full", "/api/v2/modules/full"})
+@RequestMapping("/api/v2/modules/full")
 @Tag(name = "module-controller")
 @CrossOrigin(
         origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
