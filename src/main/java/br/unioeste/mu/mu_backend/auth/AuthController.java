@@ -28,15 +28,16 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest req, HttpServletRequest httpServletRequest) {
         String ipAddress = httpServletRequest.getRemoteAddr();
-        loginAttemptLimiter.checkAllowed(ipAddress, req.username);
+        String username = req.getUsername();
+        loginAttemptLimiter.checkAllowed(ipAddress, username);
 
         Authentication authentication;
         try {
             authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.username, req.password)
+                    new UsernamePasswordAuthenticationToken(username, req.getPassword())
             );
         } catch (AuthenticationException ex) {
-            loginAttemptLimiter.registerFailure(ipAddress, req.username);
+            loginAttemptLimiter.registerFailure(ipAddress, username);
             throw ex;
         }
 
@@ -45,8 +46,8 @@ public class AuthController {
                 .findFirst()
                 .orElse("ROLE_USER");
 
-        String token = jwtService.generateToken(req.username, role);
-        loginAttemptLimiter.registerSuccess(ipAddress, req.username);
+        String token = jwtService.generateToken(username, role);
+        loginAttemptLimiter.registerSuccess(ipAddress, username);
 
         return new LoginResponse(token);
     }
