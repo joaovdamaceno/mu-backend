@@ -10,6 +10,9 @@ TRUNCATE TABLE
     exercises,
     post_sections,
     posts,
+    contest_team_members,
+    contest_teams,
+    contests,
     lessons,
     modules,
     registrations
@@ -124,5 +127,27 @@ VALUES
         'Noções básicas de lógica e C.',
         'Busco reforçar fundamentos e praticar exercícios semanais.'
     );
+
+
+-- Contests
+INSERT INTO contests (name, duration_minutes, start_datetime, is_team_based, codeforces_mirror_url)
+VALUES
+    ('MU Contest de Aquecimento', 120, NOW() + INTERVAL '7 days', TRUE, 'https://mirror.example.com/contest/mu-aquecimento'),
+    ('MU Contest Individual #1', 150, NOW() + INTERVAL '14 days', FALSE, 'https://mirror.example.com/contest/mu-individual-1');
+
+-- Times inscritos em contest por equipes
+INSERT INTO contest_teams (contest_id, team_name, coach_name, institution, reserve_name, is_cafe_com_leite)
+VALUES
+    (1, 'Byte Benders', 'Prof. Carlos Mendes', 'UNIOESTE', 'João Pedro', FALSE),
+    (1, 'Runtime Hunters', 'Profa. Fernanda Silva', 'UNIOESTE', NULL, TRUE);
+
+INSERT INTO contest_team_members (team_id, member_index, member_name)
+VALUES
+    (1, 1, 'Ana Souza'),
+    (1, 2, 'Bruno Lima'),
+    (1, 3, 'Carla Nunes'),
+    (2, 1, 'Diego Alves'),
+    (2, 2, 'Eduarda Reis'),
+    (2, 3, 'Felipe Rocha');
 
 COMMIT;
