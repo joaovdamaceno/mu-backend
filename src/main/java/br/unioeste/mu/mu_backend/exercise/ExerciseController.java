@@ -46,6 +46,33 @@ public class ExerciseController {
         return ExerciseResponse.from(exerciseRepository.save(exercise));
     }
 
+    @PutMapping("/{exerciseId}")
+    public ExerciseResponse update(@PathVariable Long moduleId,
+                                   @PathVariable Long lessonId,
+                                   @PathVariable Long exerciseId,
+                                   @Valid @RequestBody ExerciseRequest request) {
+        Module module = findModule(moduleId);
+        Lesson lesson = findLesson(lessonId);
+        validateLessonBelongsToModule(moduleId, lesson);
+
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new NotFoundException("Exercício não encontrado para id=" + exerciseId));
+
+        if (exercise.getLesson() == null || !exercise.getLesson().getId().equals(lessonId)) {
+            throw new BusinessValidationException("Exercício id=" + exerciseId + " não pertence à lição id=" + lessonId);
+        }
+
+        exercise.setTitle(request.getTitle());
+        exercise.setOjName(request.getOjName());
+        exercise.setOjUrl(request.getOjUrl());
+        exercise.setDifficulty(request.getDifficulty());
+        exercise.setTags(request.getTags());
+        exercise.setModule(module);
+        exercise.setLesson(lesson);
+
+        return ExerciseResponse.from(exerciseRepository.save(exercise));
+    }
+
     private Module findModule(Long moduleId) {
         return moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
