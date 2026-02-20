@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ class ContestTeamServiceTest {
         contest.setTeamBased(true);
 
         when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
-        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "team rocket")).thenReturn(true);
+        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "Team Rocket")).thenReturn(true);
 
         assertThatThrownBy(() -> contestTeamService.registerTeam(contestId, request))
                 .isInstanceOf(ConflictException.class)
@@ -59,16 +60,39 @@ class ContestTeamServiceTest {
         contest.setTeamBased(true);
 
         when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
-        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "time alpha")).thenReturn(false);
+        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "Time Alpha")).thenReturn(false);
         when(contestTeamRepository.save(any(ContestTeam.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         contestTeamService.registerTeam(contestId, request);
 
         ArgumentCaptor<ContestTeam> teamCaptor = ArgumentCaptor.forClass(ContestTeam.class);
         verify(contestTeamRepository).save(teamCaptor.capture());
-        verify(contestTeamRepository).existsByContestIdAndTeamNameIgnoreCase(eq(contestId), eq("time alpha"));
+        verify(contestTeamRepository).existsByContestIdAndTeamNameIgnoreCase(eq(contestId), eq("Time Alpha"));
 
         assertThat(teamCaptor.getValue().getTeamName()).isEqualTo("Time Alpha");
+    }
+
+    @Test
+    void shouldThrowConflictWhenRepositorySaveFailsWithUniqueConstraintViolation() {
+        Long contestId = 3L;
+        ContestTeamRegistrationRequest request = validRequest();
+        request.setTeamName("  Time Beta  ");
+
+        Contest contest = new Contest();
+        contest.setTeamBased(true);
+
+        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "Time Beta")).thenReturn(false);
+        when(contestTeamRepository.save(any(ContestTeam.class))).thenThrow(
+                new DataIntegrityViolationException(
+                        "duplicate key value violates unique constraint",
+                        new RuntimeException("contest_teams(contest_id, lower(team_name))")
+                )
+        );
+
+        assertThatThrownBy(() -> contestTeamService.registerTeam(contestId, request))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("Já existe um time com este nome neste contest");
     }
 
     private ContestTeamRegistrationRequest validRequest() {
