@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.shared.error;
 
+import br.unioeste.mu.mu_backend.auth.LoginRateLimitExceededException;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
@@ -286,6 +287,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED,
                 ErrorCode.UNAUTHORIZED,
                 "Não autorizado.",
+                request.getRequestURI(),
+                List.of()
+        );
+    }
+
+
+    @ExceptionHandler(LoginRateLimitExceededException.class)
+    public ResponseEntity<ApiError> handleLoginRateLimitExceeded(LoginRateLimitExceededException ex, HttpServletRequest request) {
+        return buildResponse(
+                HttpStatus.TOO_MANY_REQUESTS,
+                ErrorCode.LOGIN_RATE_LIMIT_EXCEEDED,
+                ex.getMessage(),
                 request.getRequestURI(),
                 List.of()
         );

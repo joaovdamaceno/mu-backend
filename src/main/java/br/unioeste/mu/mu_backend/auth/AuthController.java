@@ -1,6 +1,7 @@
 package br.unioeste.mu.mu_backend.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -13,19 +14,31 @@ public class AuthController {
 
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
+    private final LoginAttemptLimiter loginAttemptLimiter;
 
-    public AuthController(AuthenticationManager authManager, JwtService jwtService) {
+    public AuthController(AuthenticationManager authManager,
+                          JwtService jwtService,
+                          LoginAttemptLimiter loginAttemptLimiter) {
         this.authManager = authManager;
         this.jwtService = jwtService;
+        this.loginAttemptLimiter = loginAttemptLimiter;
     }
 
     @Operation(summary = "Authenticate user and generate JWT", security = {})
     @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest req) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest req, HttpServletRequest httpServletRequest) {
+        String ipAddress = resolveClientIp(httpServletRequest);
+        loginAttemptLimiter.checkAllowed(ipAddress, req.username);
 
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.username, req.password)
-        );
+        Authentication authentication;
+        try {
+            authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.username, req.password)
+            );
+        } catch (AuthenticationException ex) {
+            loginAttemptLimiter.registerFailure(ipAddress, req.username);
+            throw ex;
+        }
 
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -33,7 +46,16 @@ public class AuthController {
                 .orElse("ROLE_USER");
 
         String token = jwtService.generateToken(req.username, role);
+        loginAttemptLimiter.registerSuccess(ipAddress, req.username);
 
         return new LoginResponse(token);
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor == null || forwardedFor.isBlank()) {
+            return request.getRemoteAddr();
+        }
+        return forwardedFor.split(",")[0].trim();
     }
 }

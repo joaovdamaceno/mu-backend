@@ -8,6 +8,7 @@ public enum ErrorCode {
     CONFLICT,
     UNAUTHORIZED,
     FORBIDDEN,
+    LOGIN_RATE_LIMIT_EXCEEDED,
     INTERNAL_ERROR,
     BAD_REQUEST
 }
