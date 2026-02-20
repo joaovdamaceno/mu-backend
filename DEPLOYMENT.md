@@ -68,6 +68,30 @@ proxy_set_header X-Forwarded-Proto $scheme;
 
 For Kubernetes Ingress / external load balancers, configure equivalent forwarded-header behavior and restrict network paths so only trusted proxy IPs can reach the application directly.
 
+
+## SQL logging policy
+
+- Base configuration (`application.properties`) keeps SQL logging disabled by default:
+  - `spring.jpa.show-sql=false`
+  - `spring.jpa.properties.hibernate.format_sql=false`
+- Production profile (`application-prod.properties`) also keeps SQL logging disabled and unformatted.
+- Development and local profiles use logger-based SQL visibility (instead of `show-sql`) via:
+  - `logging.level.org.hibernate.SQL=DEBUG`
+  - `logging.level.org.hibernate.orm.jdbc.bind=TRACE`
+  - `spring.jpa.properties.hibernate.format_sql=true`
+
+### Temporary SQL troubleshooting in production-like environments
+
+Prefer temporary logger overrides instead of changing committed property files. Example using environment variables:
+
+```bash
+LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG \
+LOGGING_LEVEL_ORG_HIBERNATE_ORM_JDBC_BIND=TRACE \
+java -jar app.jar
+```
+
+After troubleshooting, remove the overrides to return to the default no-SQL-log policy.
+
 ## Secret rotation
 
 Any previously committed secrets should be considered compromised. Rotate database
