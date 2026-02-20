@@ -8,7 +8,6 @@ import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
 import br.unioeste.mu.mu_backend.post.PostController;
 import br.unioeste.mu.mu_backend.post.PostRepository;
-import br.unioeste.mu.mu_backend.post.PostSectionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +35,6 @@ class ApiErrorContractWebMvcTest {
     @MockBean
     private PostRepository postRepository;
 
-    @MockBean
-    private PostSectionRepository postSectionRepository;
 
     @MockBean
     private ExerciseRepository exerciseRepository;

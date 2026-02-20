@@ -2,7 +2,6 @@ package br.unioeste.mu.mu_backend.auth;
 
 import br.unioeste.mu.mu_backend.post.PostController;
 import br.unioeste.mu.mu_backend.post.PostRepository;
-import br.unioeste.mu.mu_backend.post.PostSectionRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +39,6 @@ class CorsPreflightWebMvcTest {
     @MockBean
     private PostRepository postRepository;
 
-    @MockBean
-    private PostSectionRepository postSectionRepository;
 
     @Test
     void shouldAllowPreflightForConfiguredOrigin() throws Exception {
