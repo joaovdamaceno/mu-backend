@@ -12,10 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contests")
-@CrossOrigin(
-        origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT}
-)
 public class ContestController {
 
     private final ContestRepository contestRepository;

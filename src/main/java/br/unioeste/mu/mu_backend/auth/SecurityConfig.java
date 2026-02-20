@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
@@ -42,7 +43,11 @@ public class SecurityConfig {
         this.objectMapper = objectMapper;
         this.allowedOrigins = Binder.get(environment)
                 .bind("app.cors.allowed-origins", Bindable.listOf(String.class))
-                .orElse(List.of("http://localhost:3000", "http://localhost:8080"));
+                .orElse(List.of("http://localhost:3000", "http://localhost:8080"))
+                .stream()
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Bean
