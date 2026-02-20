@@ -48,7 +48,7 @@ public class ContestTeamService {
         if (!contestRepository.existsById(contestId)) {
             throw new NotFoundException("Contest não encontrado para id=" + contestId);
         }
-        return contestTeamRepository.findByContestIdOrderByCreatedAtAsc(contestId)
+        return contestTeamRepository.findAllByContestIdWithMembersOrderByCreatedAtAsc(contestId)
                 .stream()
                 .map(ContestTeamResponse::from)
                 .toList();
