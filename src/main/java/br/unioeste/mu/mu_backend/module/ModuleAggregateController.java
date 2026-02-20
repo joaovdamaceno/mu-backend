@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping({"/api/modules/full", "/api/v2/modules/full"})
+@RequestMapping({"/api/modules/full", "/api/modules/aggregate", "/api/v2/modules/full"})
 @Tag(name = "Modules (aggregate)")
 @CrossOrigin(
         origins = {"${app.cors.allowed-origins[0]}", "${app.cors.allowed-origins[1]}"},
@@ -31,7 +31,7 @@ public class ModuleAggregateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create module with lessons, exercises, and extra materials in a single request")
+    @Operation(summary = "Create full module (module, lessons, exercises, and extra materials) in a single request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Module and children created", content = @Content(
                     examples = @ExampleObject(value = """
