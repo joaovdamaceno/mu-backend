@@ -1,5 +1,7 @@
 package br.unioeste.mu.mu_backend.module;
 
+import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
+import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
@@ -17,9 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class ModuleController {
 
     private final ModuleRepository repository;
+    private final ModuleAggregateService moduleAggregateService;
 
-    public ModuleController(ModuleRepository repository) {
+    public ModuleController(ModuleRepository repository, ModuleAggregateService moduleAggregateService) {
         this.repository = repository;
+        this.moduleAggregateService = moduleAggregateService;
     }
 
     @GetMapping
@@ -40,6 +44,13 @@ public class ModuleController {
     @Operation(summary = "Create module (legacy endpoint). Prefer POST /api/modules/full for the form flow")
     public ModuleResponse create(@Valid @RequestBody Module module) {
         return ModuleResponse.from(repository.save(module));
+    }
+
+    @PostMapping("/full")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create module with lessons, exercises, and extra materials in a single request")
+    public ModuleAggregateResponse createFull(@Valid @RequestBody ModuleAggregateRequest request) {
+        return moduleAggregateService.createFullModule(request);
     }
 
     @PutMapping("/{id}")

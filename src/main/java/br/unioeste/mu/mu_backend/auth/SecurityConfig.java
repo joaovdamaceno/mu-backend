@@ -1,7 +1,9 @@
 package br.unioeste.mu.mu_backend.auth;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -24,9 +26,11 @@ public class SecurityConfig {
     private final List<String> allowedOrigins;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
-                          @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
+                          Environment environment) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.allowedOrigins = allowedOrigins;
+        this.allowedOrigins = Binder.get(environment)
+                .bind("app.cors.allowed-origins", Bindable.listOf(String.class))
+                .orElse(List.of("http://localhost:3000", "http://localhost:8080"));
     }
 
     @Bean
