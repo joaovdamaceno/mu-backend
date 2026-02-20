@@ -1,9 +1,9 @@
 package br.unioeste.mu.mu_backend.post;
 
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -28,10 +28,9 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> get(@PathVariable Long id) {
+    public Post get(@PathVariable Long id) {
         return postRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
     }
 
     @PostMapping
@@ -45,31 +44,33 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> update(@PathVariable Long id, @RequestBody Post updatedPost) {
-        return postRepository.findById(id)
-                .map(post -> {
-                    post.setTitle(updatedPost.getTitle());
-                    post.setSlug(updatedPost.getSlug());
-                    post.setSummary(updatedPost.getSummary());
-                    post.setCoverImageUrl(updatedPost.getCoverImageUrl());
-                    post.setAuthorName(updatedPost.getAuthorName());
-                    post.setStatus(updatedPost.getStatus());
+    public Post update(@PathVariable Long id, @RequestBody Post updatedPost) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
 
-                    post.getSections().clear();
-                    if (updatedPost.getSections() != null) {
-                        for (PostSection section : updatedPost.getSections()) {
-                            section.setPost(post);
-                            post.getSections().add(section);
-                        }
-                    }
+        post.setTitle(updatedPost.getTitle());
+        post.setSlug(updatedPost.getSlug());
+        post.setSummary(updatedPost.getSummary());
+        post.setCoverImageUrl(updatedPost.getCoverImageUrl());
+        post.setAuthorName(updatedPost.getAuthorName());
+        post.setStatus(updatedPost.getStatus());
 
-                    return ResponseEntity.ok(postRepository.save(post));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        post.getSections().clear();
+        if (updatedPost.getSections() != null) {
+            for (PostSection section : updatedPost.getSections()) {
+                section.setPost(post);
+                post.getSections().add(section);
+            }
+        }
+
+        return postRepository.save(post);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
+        if (!postRepository.existsById(id)) {
+            throw new NotFoundException("Post não encontrado para id=" + id);
+        }
         postRepository.deleteById(id);
     }
 }
