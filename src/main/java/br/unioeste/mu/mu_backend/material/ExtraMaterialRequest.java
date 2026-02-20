@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ExtraMaterialRequest {
 
-    @NotBlank(message = "Type is required")
+    @NotBlank(message = "Tipo é obrigatório")
     private String type;
 
-    @NotBlank(message = "URL is required")
+    @NotBlank(message = "URL é obrigatória")
     private String url;
 
     public ExtraMaterialRequest() {

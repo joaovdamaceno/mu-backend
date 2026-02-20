@@ -12,16 +12,16 @@ import java.util.List;
 
 public class ExerciseAggregateRequest {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Online judge name is required")
+    @NotBlank(message = "Nome do juiz online é obrigatório")
     private String ojName;
 
-    @NotBlank(message = "Online judge URL is required")
+    @NotBlank(message = "URL do juiz online é obrigatória")
     private String ojUrl;
 
-    @NotNull(message = "Difficulty is required")
+    @NotNull(message = "Dificuldade é obrigatória")
     private ExerciseDifficulty difficulty;
 
     private List<String> tags = new ArrayList<>();

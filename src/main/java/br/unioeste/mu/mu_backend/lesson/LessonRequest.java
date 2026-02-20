@@ -6,19 +6,19 @@ import jakarta.validation.constraints.NotNull;
 
 public class LessonRequest {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Slug is required")
+    @NotBlank(message = "Slug é obrigatório")
     private String slug;
 
-    @NotBlank(message = "Summary is required")
+    @NotBlank(message = "Resumo é obrigatório")
     private String summary;
 
-    @NotBlank(message = "Video URL is required")
+    @NotBlank(message = "URL do vídeo é obrigatória")
     private String videoUrl;
 
-    @NotNull(message = "Order index is required")
+    @NotNull(message = "Ordem é obrigatória")
     private Integer orderIndex;
 
     public LessonRequest() {
