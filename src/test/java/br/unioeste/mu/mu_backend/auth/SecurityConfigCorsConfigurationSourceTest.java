@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SecurityConfigCorsConfigurationSourceTest {
 
@@ -44,6 +46,51 @@ class SecurityConfigCorsConfigurationSourceTest {
                 List.of("https://one.example.com", "https://two.example.com", "https://three.example.com"),
                 configuration.getAllowedOrigins()
         );
+    }
+
+    @Test
+    void shouldUseExplicitAllowedHeaders() {
+        CorsConfiguration configuration = corsConfigurationForOrigins("https://frontend.example.com");
+
+        assertEquals(
+                List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"),
+                configuration.getAllowedHeaders()
+        );
+    }
+
+
+    @Test
+    void shouldNotExposeHeadersWhenNotRequiredByFrontend() {
+        CorsConfiguration configuration = corsConfigurationForOrigins("https://frontend.example.com");
+
+        assertNull(configuration.getExposedHeaders());
+    }
+
+    @Test
+    void shouldRejectBlankOriginFromConfiguration() {
+        MockEnvironment environment = new MockEnvironment();
+        environment.setProperty("app.cors.allowed-origins[0]", "   ");
+
+        assertThrows(IllegalStateException.class,
+                () -> new SecurityConfig(new NoOpJwtAuthFilter(), environment, new ObjectMapper()));
+    }
+
+    @Test
+    void shouldRejectOriginWithInvalidScheme() {
+        MockEnvironment environment = new MockEnvironment();
+        environment.setProperty("app.cors.allowed-origins[0]", "ftp://frontend.example.com");
+
+        assertThrows(IllegalStateException.class,
+                () -> new SecurityConfig(new NoOpJwtAuthFilter(), environment, new ObjectMapper()));
+    }
+
+    @Test
+    void shouldRejectOriginWithoutHost() {
+        MockEnvironment environment = new MockEnvironment();
+        environment.setProperty("app.cors.allowed-origins[0]", "https:///path-only");
+
+        assertThrows(IllegalStateException.class,
+                () -> new SecurityConfig(new NoOpJwtAuthFilter(), environment, new ObjectMapper()));
     }
 
     private CorsConfiguration corsConfigurationForOrigins(String... origins) {

@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
@@ -31,6 +33,18 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
+
+    private static final List<String> DEFAULT_ALLOWED_ORIGINS = List.of(
+            "http://localhost:3000",
+            "http://localhost:8080"
+    );
+    private static final List<String> ALLOWED_HEADERS = List.of(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "Origin",
+            "X-Requested-With"
+    );
 
     private final JwtAuthFilter jwtAuthFilter;
     private final List<String> allowedOrigins;
@@ -43,11 +57,15 @@ public class SecurityConfig {
         this.objectMapper = objectMapper;
         this.allowedOrigins = Binder.get(environment)
                 .bind("app.cors.allowed-origins", Bindable.listOf(String.class))
-                .orElse(List.of("http://localhost:3000", "http://localhost:8080"))
+                .orElse(DEFAULT_ALLOWED_ORIGINS)
                 .stream()
                 .map(String::trim)
-                .filter(origin -> !origin.isBlank())
+                .peek(this::validateOrigin)
                 .collect(Collectors.toUnmodifiableList());
+
+        if (allowedOrigins.isEmpty()) {
+            throw new IllegalStateException("CORS configuration app.cors.allowed-origins must not be empty.");
+        }
     }
 
     @Bean
@@ -86,7 +104,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(ALLOWED_HEADERS);
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -123,5 +141,27 @@ public class SecurityConfig {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(body));
+    }
+
+    private void validateOrigin(String origin) {
+        if (!StringUtils.hasText(origin)) {
+            throw new IllegalStateException("CORS configuration contains a blank origin.");
+        }
+
+        URI parsedOrigin;
+        try {
+            parsedOrigin = URI.create(origin);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException("Invalid CORS origin configured: " + origin, ex);
+        }
+
+        String scheme = parsedOrigin.getScheme();
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            throw new IllegalStateException("Invalid CORS origin configured: " + origin);
+        }
+
+        if (!StringUtils.hasText(parsedOrigin.getHost())) {
+            throw new IllegalStateException("Invalid CORS origin configured: " + origin);
+        }
     }
 }
