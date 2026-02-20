@@ -18,10 +18,10 @@ public class JwtService {
     public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
         String normalizedSecret = secret == null ? "" : secret.trim();
         if (normalizedSecret.isEmpty()) {
-            throw new IllegalStateException("Missing required configuration: jwt.secret must be set and non-blank.");
+            throw new IllegalStateException("Missing required JWT secret. Configure JWT_SECRET environment variable (mapped to jwt.secret) with a non-blank value.");
         }
         if (normalizedSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
-            throw new IllegalStateException("Invalid configuration: jwt.secret must be at least 32 bytes for HS256.");
+            throw new IllegalStateException("Invalid JWT secret. JWT_SECRET (jwt.secret) must be at least 32 bytes for HS256.");
         }
         this.key = Keys.hmacShaKeyFor(normalizedSecret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;

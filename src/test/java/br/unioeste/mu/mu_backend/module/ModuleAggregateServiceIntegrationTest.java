@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
+@SpringBootTest(properties = "jwt.secret=0123456789abcdef0123456789abcdef")
 class ModuleAggregateServiceIntegrationTest {
 
     @Autowired

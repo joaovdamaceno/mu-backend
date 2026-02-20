@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "spring.datasource.username=sa",
         "spring.datasource.password=",
         "spring.jpa.hibernate.ddl-auto=create-drop",
+        "jwt.secret=0123456789abcdef0123456789abcdef",
         "spring.flyway.enabled=false"
 })
 class ProdProfileDefaultUserBootstrapIntegrationTest {
