@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ContestTeamService {
@@ -28,9 +29,9 @@ public class ContestTeamService {
             throw new BusinessValidationException("Este contest é individual e não aceita inscrição de times");
         }
 
-        String normalizedTeamName = request.getTeamName().trim();
-
-        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamName)) {
+        String normalizedTeamName = normalizeTeamName(request.getTeamName());
+        String normalizedTeamNameForComparison = normalizedTeamName.toLowerCase(Locale.ROOT);
+        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamNameForComparison)) {
             throw new ConflictException("Já existe um time com este nome neste contest");
         }
 
@@ -66,6 +67,10 @@ public class ContestTeamService {
         member.setMemberIndex(index);
         member.setMemberName(name.trim());
         return member;
+    }
+
+    private String normalizeTeamName(String teamName) {
+        return teamName.trim();
     }
 
     private String trimToNull(String value) {

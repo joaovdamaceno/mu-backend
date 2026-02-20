@@ -2,7 +2,6 @@ package br.unioeste.mu.mu_backend.contest;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -23,25 +22,22 @@ public class ContestRequest {
 
     private boolean teamBased;
 
-    @Size(max = 2000, message = "Link do mirror deve ter no máximo 2000 caracteres")
-    @Pattern(
-            regexp = "^(https?://.*)?$",
-            message = "Link do mirror deve ser uma URL HTTP/HTTPS válida"
-    )
+    @Size(max = 2000, message = "URL do espelho Codeforces deve ter no máximo 2000 caracteres")
     private String codeforcesMirrorUrl;
 
     public void applyTo(Contest contest) {
-        contest.setName(name != null ? name.trim() : null);
+        contest.setName(name == null ? null : name.trim());
         contest.setDurationMinutes(durationMinutes);
         contest.setStartDateTime(startDateTime);
         contest.setTeamBased(teamBased);
-        contest.setCodeforcesMirrorUrl(trimToNull(codeforcesMirrorUrl));
+        contest.setCodeforcesMirrorUrl(normalizeNullable(codeforcesMirrorUrl));
     }
 
-    private String trimToNull(String value) {
+    private String normalizeNullable(String value) {
         if (value == null) {
             return null;
         }
+
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
