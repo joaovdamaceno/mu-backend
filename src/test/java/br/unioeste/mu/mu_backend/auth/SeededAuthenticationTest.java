@@ -1,37 +1,66 @@
 package br.unioeste.mu.mu_backend.auth;
 
+import br.unioeste.mu.mu_backend.user.User;
+import br.unioeste.mu.mu_backend.user.UserRepository;
+import br.unioeste.mu.mu_backend.user.UserRole;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mockito.ArgumentCaptor;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SeededAuthenticationTest {
 
-    private static final String SEEDED_BCRYPT_HASH = "$2a$10$abcdefghijklmnopqrstuu5Lo0g67CiD3M4RpN1BmBb4Crp5w7dbK";
-
     @Test
-    void seededAdminPasswordIsAcceptedByApplicationEncoder() {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    void shouldCreateAdminUsingRuntimePasswordAndBcryptEncoderContract() {
+        UserRepository userRepository = mock(UserRepository.class);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
-        assertTrue(
-                passwordEncoder.matches("password", SEEDED_BCRYPT_HASH),
-                "Seeded admin password hash must authenticate with BCryptPasswordEncoder"
-        );
-    }
-    @Test
-    void seedScriptsContainAdminWithValidatedHash() throws IOException {
-        String migrationSeed = Files.readString(Path.of("src/main/resources/db/migration/V11__seed_default_users.sql"));
-        String populateSeed = Files.readString(Path.of("populate.sql"));
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("super-secret")).thenReturn("encoded-hash");
 
-        assertTrue(migrationSeed.contains("admin"));
-        assertTrue(migrationSeed.contains(SEEDED_BCRYPT_HASH));
-        assertFalse(populateSeed.contains("INSERT INTO users"));
-        assertFalse(populateSeed.contains(SEEDED_BCRYPT_HASH));
+        DefaultUsersBootstrapRunner runner = new DefaultUsersBootstrapRunner(userRepository, passwordEncoder, "super-secret");
+        runner.run();
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        User created = userCaptor.getValue();
+        assertEquals("admin", created.getUsername());
+        assertEquals("encoded-hash", created.getPasswordHash());
+        assertEquals(UserRole.ADMIN, created.getRole());
     }
 
+    @Test
+    void shouldNotRegisterBootstrapRunnerWhenProdProfileIsActive() {
+        ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+                .withPropertyValues("spring.profiles.active=prod")
+                .withUserConfiguration(DefaultUsersBootstrapRunner.class, SupportBeans.class);
+
+        contextRunner.run(context -> assertFalse(context.containsBean("defaultUsersBootstrapRunner")));
+    }
+
+    @Configuration
+    static class SupportBeans {
+        @Bean
+        UserRepository userRepository() {
+            UserRepository repository = mock(UserRepository.class);
+            when(repository.findByUsername("admin")).thenReturn(Optional.empty());
+            return repository;
+        }
+
+        @Bean
+        PasswordEncoder passwordEncoder() {
+            return mock(PasswordEncoder.class);
+        }
+    }
 }
