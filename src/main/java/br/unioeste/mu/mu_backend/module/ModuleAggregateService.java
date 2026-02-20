@@ -10,11 +10,15 @@ import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateResponse;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ModuleAggregateService {
@@ -38,6 +42,8 @@ public class ModuleAggregateService {
 
     @Transactional
     public ModuleAggregateResponse createFullModule(ModuleAggregateRequest request) {
+        validateAggregatePayload(request);
+
         Module module = new Module();
         module.setTitle(request.getTitle());
         module.setNotes(request.getNotes());
@@ -75,5 +81,49 @@ public class ModuleAggregateService {
         }
 
         return new ModuleAggregateResponse(persistedModule, lessonResponses);
+    }
+
+    private void validateAggregatePayload(ModuleAggregateRequest request) {
+        if (request == null) {
+            throw invalidPayload("Payload do módulo agregado é obrigatório");
+        }
+
+        Set<Integer> usedOrderIndexes = new HashSet<>();
+        Set<String> usedSlugs = new HashSet<>();
+
+        for (int lessonIndex = 0; lessonIndex < request.getLessons().size(); lessonIndex++) {
+            LessonAggregateRequest lesson = request.getLessons().get(lessonIndex);
+            int lessonPosition = lessonIndex + 1;
+
+            if (lesson == null) {
+                throw invalidPayload("Lição na posição " + lessonPosition + " está ausente");
+            }
+
+            validateRequiredText(lesson.getSlug(), "slug", lessonPosition);
+
+            Integer orderIndex = lesson.getOrderIndex();
+            if (orderIndex == null) {
+                throw invalidPayload("Lição na posição " + lessonPosition + " deve informar orderIndex");
+            }
+
+            if (!usedOrderIndexes.add(orderIndex)) {
+                throw invalidPayload("orderIndex duplicado para lições do módulo: " + orderIndex);
+            }
+
+            String normalizedSlug = lesson.getSlug().trim().toLowerCase();
+            if (!usedSlugs.add(normalizedSlug)) {
+                throw invalidPayload("slug duplicado para lições do módulo: " + lesson.getSlug().trim());
+            }
+        }
+    }
+
+    private void validateRequiredText(String value, String fieldName, int lessonPosition) {
+        if (value == null || value.trim().isEmpty()) {
+            throw invalidPayload("Lição na posição " + lessonPosition + " possui " + fieldName + " inválido");
+        }
+    }
+
+    private ResponseStatusException invalidPayload(String message) {
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
     }
 }
