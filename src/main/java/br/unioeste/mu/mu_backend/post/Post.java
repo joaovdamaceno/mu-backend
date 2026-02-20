@@ -2,6 +2,10 @@ package br.unioeste.mu.mu_backend.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,10 +19,16 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Título é obrigatório")
+    @Size(max = 200, message = "Título deve ter no máximo 200 caracteres")
     private String title;
 
+    @Size(max = 50, message = "Tag deve ter no máximo 50 caracteres")
     private String tag;
 
+    @NotBlank(message = "Slug é obrigatório")
+    @Size(max = 200, message = "Slug deve ter no máximo 200 caracteres")
+    @Pattern(regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "Slug deve conter apenas letras minúsculas, números e hífens")
     private String slug;
 
     @Column(columnDefinition = "TEXT")
@@ -28,8 +38,12 @@ public class Post {
     private String coverImageUrl;
 
     @Column(name = "author_name")
+    @NotBlank(message = "Autor é obrigatório")
+    @Size(max = 200, message = "Autor deve ter no máximo 200 caracteres")
     private String authorName;
 
+    @NotBlank(message = "Status é obrigatório")
+    @Size(max = 50, message = "Status deve ter no máximo 50 caracteres")
     private String status;
 
     @Column(name = "main_text", columnDefinition = "TEXT")
@@ -44,6 +58,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC")
     @JsonIgnore
+    @Valid
     private List<PostSection> sections = new ArrayList<>();
 
     @PrePersist
