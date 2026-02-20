@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,7 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AuthController.class)
-@Import({GlobalExceptionHandler.class, SecurityConfig.class, LoginAttemptLimiter.class})
+@ActiveProfiles("local")
+@Import({GlobalExceptionHandler.class, SecurityConfig.class, LocalLoginAttemptLimiter.class})
 @TestPropertySource(properties = {
         "app.auth.login.max-attempts=2",
         "app.auth.login.window-seconds=1"
