@@ -45,8 +45,8 @@ public class ModuleController {
 
     @PostMapping
     @Operation(summary = "Create module (legacy endpoint). Prefer POST /api/modules/full for the form flow")
-    public ModuleResponse create(@Valid @RequestBody Module module) {
-        return ModuleResponse.from(repository.save(module));
+    public ModuleResponse create(@Valid @RequestBody ModuleRequest request) {
+        return ModuleResponse.from(repository.save(request.toModule()));
     }
 
     @PostMapping("/full")
@@ -57,12 +57,10 @@ public class ModuleController {
     }
 
     @PutMapping("/{id}")
-    public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody Module module) {
+    public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody ModuleRequest request) {
         Module existing = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));
-        existing.setTitle(module.getTitle());
-        existing.setNotes(module.getNotes());
-        existing.setPublished(module.isPublished());
+        request.applyTo(existing);
         return ModuleResponse.from(repository.save(existing));
     }
 

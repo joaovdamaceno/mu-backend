@@ -41,34 +41,16 @@ public class PostController {
     }
 
     @PostMapping
-    public PostResponse create(@Valid @RequestBody Post post) {
-        if (post.getSections() != null) {
-            for (PostSection section : post.getSections()) {
-                section.setPost(post);
-            }
-        }
-        return TO_RESPONSE.apply(postRepository.save(post));
+    public PostResponse create(@Valid @RequestBody PostRequest request) {
+        return TO_RESPONSE.apply(postRepository.save(request.toPost()));
     }
 
     @PutMapping("/{id}")
-    public PostResponse update(@PathVariable Long id, @Valid @RequestBody Post updatedPost) {
+    public PostResponse update(@PathVariable Long id, @Valid @RequestBody PostRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
 
-        post.setTitle(updatedPost.getTitle());
-        post.setSlug(updatedPost.getSlug());
-        post.setSummary(updatedPost.getSummary());
-        post.setCoverImageUrl(updatedPost.getCoverImageUrl());
-        post.setAuthorName(updatedPost.getAuthorName());
-        post.setStatus(updatedPost.getStatus());
-
-        post.getSections().clear();
-        if (updatedPost.getSections() != null) {
-            for (PostSection section : updatedPost.getSections()) {
-                section.setPost(post);
-                post.getSections().add(section);
-            }
-        }
+        request.applyTo(post);
 
         return TO_RESPONSE.apply(postRepository.save(post));
     }

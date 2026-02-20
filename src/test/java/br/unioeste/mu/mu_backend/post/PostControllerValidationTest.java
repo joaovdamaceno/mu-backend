@@ -68,6 +68,38 @@ class PostControllerValidationTest {
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].contentValid')]").isNotEmpty());
     }
 
+
+    @Test
+    void shouldRejectPostPayloadWithNonPermittedFields() throws Exception {
+        String payload = """
+                {
+                  "title": "Post válido",
+                  "slug": "post-valido",
+                  "authorName": "Autor",
+                  "status": "PUBLISHED",
+                  "id": 99,
+                  "createdAt": "2024-01-01T00:00:00",
+                  "sections": [
+                    {
+                      "position": 0,
+                      "text": "Texto",
+                      "post": {"id": 1}
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/api/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.details[?(@.field=='payloadValid')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='sections[0].payloadValid')]").isNotEmpty());
+
+        verifyNoInteractions(postRepository);
+    }
+
     @Test
     void shouldApplyPaginationAndSortingForPostsList() throws Exception {
         Post post = new Post();

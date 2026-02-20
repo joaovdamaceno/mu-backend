@@ -5,22 +5,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import br.unioeste.mu.mu_backend.shared.error.GlobalExceptionHandler;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+
+import org.springframework.context.annotation.Import;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ModuleController.class)
+@Import(GlobalExceptionHandler.class)
 @AutoConfigureMockMvc(addFilters = false)
 class ModuleControllerPaginationTest {
 
@@ -32,6 +38,30 @@ class ModuleControllerPaginationTest {
 
     @MockBean
     private ModuleAggregateService moduleAggregateService;
+
+
+    @Test
+    void shouldRejectModulePayloadWithNonPermittedFields() throws Exception {
+        String payload = """
+                {
+                  "title": "Módulo 1",
+                  "notes": "Notas",
+                  "published": true,
+                  "id": 100,
+                  "createdAt": "2024-01-01T00:00:00",
+                  "lessons": []
+                }
+                """;
+
+        mockMvc.perform(post("/api/modules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.details[?(@.field=='payloadValid')]").isNotEmpty());
+
+        verifyNoInteractions(moduleRepository);
+    }
 
     @Test
     void shouldApplyPaginationAndSortingForModulesList() throws Exception {
