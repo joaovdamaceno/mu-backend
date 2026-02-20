@@ -16,6 +16,7 @@ Provide these variables to configure the application in all environments:
 - Produção (`prod`) **não** cria contas padrão automaticamente.
 - O bootstrap em código só roda com perfil `dev` ou `local`.
 - Para criar o usuário administrativo local (`admin`), defina `BOOTSTRAP_ADMIN_PASSWORD` com uma senha forte.
+- No Docker Compose, inclua `BOOTSTRAP_ADMIN_PASSWORD` no `.env` para repassar a senha ao container `app`.
 - Se `BOOTSTRAP_ADMIN_PASSWORD` não for definida, nenhum usuário de autenticação é criado automaticamente.
 - O processo é idempotente: se `admin` já existir, o bootstrap não recria o usuário.
 
