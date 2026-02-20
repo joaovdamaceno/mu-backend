@@ -1,6 +1,7 @@
 package br.unioeste.mu.mu_backend.module;
 
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class ModuleController {
     }
 
     @PostMapping
+    @Operation(summary = "Create module (legacy endpoint). Prefer POST /api/modules/full for the form flow")
     public ModuleResponse create(@Valid @RequestBody Module module) {
         return ModuleResponse.from(repository.save(module));
     }
