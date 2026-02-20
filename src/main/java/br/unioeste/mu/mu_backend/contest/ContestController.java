@@ -28,7 +28,7 @@ public class ContestController {
 
     @GetMapping
     public Page<ContestResponse> list(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
+                                      @RequestParam(defaultValue = "20") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDateTime"));
         return contestRepository.findAll(pageRequest)
                 .map(ContestResponse::from);
