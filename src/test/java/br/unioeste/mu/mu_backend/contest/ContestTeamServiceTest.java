@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.contest;
 
+import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ class ContestTeamServiceTest {
     @Test
     void shouldThrowConflictWhenTeamNameAlreadyExistsInContestIgnoringCase() {
         Long contestId = 1L;
-        ContestTeamRegistrationRequest request = validRequest();
+        ContestTeamRegistrationRequest request = validTeamBasedRequest();
         request.setTeamName("  Team Rocket  ");
 
         Contest contest = new Contest();
@@ -53,7 +54,7 @@ class ContestTeamServiceTest {
     @Test
     void shouldTrimTeamNameAndPersistWhenNameIsAvailable() {
         Long contestId = 2L;
-        ContestTeamRegistrationRequest request = validRequest();
+        ContestTeamRegistrationRequest request = validTeamBasedRequest();
         request.setTeamName("  Time Alpha  ");
 
         Contest contest = new Contest();
@@ -75,7 +76,7 @@ class ContestTeamServiceTest {
     @Test
     void shouldThrowConflictWhenRepositorySaveFailsWithUniqueConstraintViolation() {
         Long contestId = 3L;
-        ContestTeamRegistrationRequest request = validRequest();
+        ContestTeamRegistrationRequest request = validTeamBasedRequest();
         request.setTeamName("  Time Beta  ");
 
         Contest contest = new Contest();
@@ -95,7 +96,52 @@ class ContestTeamServiceTest {
                 .hasMessage("Já existe um time com este nome neste contest");
     }
 
-    private ContestTeamRegistrationRequest validRequest() {
+    @Test
+    void shouldAllowSingleCompetitorForIndividualContest() {
+        Long contestId = 4L;
+        ContestTeamRegistrationRequest request = new ContestTeamRegistrationRequest();
+        request.setTeamName("Solo");
+        request.setCompetitor1Name("Competidor Solo");
+
+        Contest contest = new Contest();
+        contest.setTeamBased(false);
+
+        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "Solo")).thenReturn(false);
+        when(contestTeamRepository.save(any(ContestTeam.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        contestTeamService.registerTeam(contestId, request);
+
+        ArgumentCaptor<ContestTeam> teamCaptor = ArgumentCaptor.forClass(ContestTeam.class);
+        verify(contestTeamRepository).save(teamCaptor.capture());
+
+        ContestTeam saved = teamCaptor.getValue();
+        assertThat(saved.getCoachName()).isNull();
+        assertThat(saved.getMembers()).hasSize(1);
+        assertThat(saved.getMembers().get(0).getMemberIndex()).isEqualTo(1);
+        assertThat(saved.getMembers().get(0).getMemberName()).isEqualTo("Competidor Solo");
+    }
+
+    @Test
+    void shouldRequireCompetitorTwoAndThreeForTeamBasedContest() {
+        Long contestId = 5L;
+        ContestTeamRegistrationRequest request = new ContestTeamRegistrationRequest();
+        request.setTeamName("Equipe incompleta");
+        request.setCompetitor1Name("Competidor 1");
+
+        Contest contest = new Contest();
+        contest.setTeamBased(true);
+
+        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+
+        assertThatThrownBy(() -> contestTeamService.registerTeam(contestId, request))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Competidor 2 é obrigatório");
+
+        verify(contestTeamRepository, never()).save(any(ContestTeam.class));
+    }
+
+    private ContestTeamRegistrationRequest validTeamBasedRequest() {
         ContestTeamRegistrationRequest request = new ContestTeamRegistrationRequest();
         request.setTeamName("Equipe");
         request.setCompetitor1Name("Competidor 1");

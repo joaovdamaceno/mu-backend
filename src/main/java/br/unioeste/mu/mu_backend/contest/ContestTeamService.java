@@ -25,10 +25,7 @@ public class ContestTeamService {
     public ContestTeamResponse registerTeam(Long contestId, ContestTeamRegistrationRequest request) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new NotFoundException("Contest não encontrado para id=" + contestId));
-
-        if (!contest.isTeamBased()) {
-            throw new BusinessValidationException("Este contest é individual e não aceita inscrição de times");
-        }
+        validateMembers(contest, request);
 
         String normalizedTeamName = normalizeTeamName(request.getTeamName());
         if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamName)) {
@@ -43,9 +40,9 @@ public class ContestTeamService {
         team.setReserveName(trimToNull(request.getReserveName()));
         team.setCafeComLeite(request.isCafeComLeite());
 
-        team.addMember(newMember(1, request.getCompetitor1Name()));
-        team.addMember(newMember(2, request.getCompetitor2Name()));
-        team.addMember(newMember(3, request.getCompetitor3Name()));
+        addMemberIfPresent(team, 1, request.getCompetitor1Name());
+        addMemberIfPresent(team, 2, request.getCompetitor2Name());
+        addMemberIfPresent(team, 3, request.getCompetitor3Name());
 
         try {
             ContestTeam saved = contestTeamRepository.save(team);
@@ -74,6 +71,28 @@ public class ContestTeamService {
         member.setMemberIndex(index);
         member.setMemberName(name.trim());
         return member;
+    }
+
+    private void addMemberIfPresent(ContestTeam team, int index, String name) {
+        String trimmed = trimToNull(name);
+        if (trimmed != null) {
+            team.addMember(newMember(index, trimmed));
+        }
+    }
+
+    private void validateMembers(Contest contest, ContestTeamRegistrationRequest request) {
+        if (trimToNull(request.getCompetitor1Name()) == null) {
+            throw new BusinessValidationException("Competidor 1 é obrigatório");
+        }
+
+        if (contest.isTeamBased()) {
+            if (trimToNull(request.getCompetitor2Name()) == null) {
+                throw new BusinessValidationException("Competidor 2 é obrigatório");
+            }
+            if (trimToNull(request.getCompetitor3Name()) == null) {
+                throw new BusinessValidationException("Competidor 3 é obrigatório");
+            }
+        }
     }
 
     private String normalizeTeamName(String teamName) {
