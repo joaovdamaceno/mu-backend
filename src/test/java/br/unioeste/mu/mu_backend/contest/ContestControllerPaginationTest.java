@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,7 +37,7 @@ class ContestControllerPaginationTest {
     @Test
     void shouldReturnPaginatedContractWithDefaultPagination() throws Exception {
         Contest contest = contest("Contest A", LocalDateTime.of(2025, 1, 10, 10, 0));
-        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "startDateTime"));
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "startDateTime", "id"));
 
         when(contestRepository.findAll(any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(List.of(contest), pageRequest, 1));
@@ -50,13 +51,13 @@ class ContestControllerPaginationTest {
                 .andExpect(jsonPath("$.number").value(0))
                 .andExpect(jsonPath("$.size").value(20));
 
-        verify(contestRepository).findAll(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "startDateTime")));
+        verify(contestRepository).findAll(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "startDateTime", "id")));
     }
 
     @Test
     void shouldApplyPaginationParamsFromQueryString() throws Exception {
         Contest contest = contest("Contest B", LocalDateTime.of(2025, 2, 15, 14, 0));
-        PageRequest pageRequest = PageRequest.of(2, 5, Sort.by(Sort.Direction.DESC, "startDateTime"));
+        PageRequest pageRequest = PageRequest.of(2, 5, Sort.by(Sort.Direction.DESC, "startDateTime", "id"));
 
         when(contestRepository.findAll(any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(List.of(contest), pageRequest, 11));
@@ -68,7 +69,23 @@ class ContestControllerPaginationTest {
                 .andExpect(jsonPath("$.number").value(2))
                 .andExpect(jsonPath("$.size").value(5));
 
-        verify(contestRepository).findAll(PageRequest.of(2, 5, Sort.by(Sort.Direction.DESC, "startDateTime")));
+        verify(contestRepository).findAll(PageRequest.of(2, 5, Sort.by(Sort.Direction.DESC, "startDateTime", "id")));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPageSizeExceedsMaximum() throws Exception {
+        mockMvc.perform(get("/api/contests").param("size", "101"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(contestRepository);
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPageSizeIsLessThanOne() throws Exception {
+        mockMvc.perform(get("/api/contests").param("size", "0"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(contestRepository);
     }
 
     private Contest contest(String name, LocalDateTime startDateTime) {

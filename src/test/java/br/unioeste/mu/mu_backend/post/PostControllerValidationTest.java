@@ -7,11 +7,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,6 +69,44 @@ class PostControllerValidationTest {
                 .andExpect(jsonPath("$.details[?(@.field=='status' && @.message=='Status é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].position')]").isNotEmpty())
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].contentValid')]").isNotEmpty());
+    }
+
+    @Test
+    void shouldApplyPaginationAndSortingForPostsList() throws Exception {
+        Post post = new Post();
+        post.setTitle("Post A");
+        post.setSlug("post-a");
+        post.setAuthorName("Autor");
+        post.setStatus("PUBLISHED");
+
+        PageRequest pageRequest = PageRequest.of(1, 10, Sort.by(Sort.Direction.DESC, "updatedAt", "id"));
+
+        when(postRepository.findAll(any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(post), pageRequest, 15));
+
+        mockMvc.perform(get("/api/posts").param("page", "1").param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].title").value("Post A"))
+                .andExpect(jsonPath("$.number").value(1))
+                .andExpect(jsonPath("$.size").value(10));
+
+        verify(postRepository).findAll(PageRequest.of(1, 10, Sort.by(Sort.Direction.DESC, "updatedAt", "id")));
+    }
+
+    @Test
+    void shouldRejectPostsListWhenSizeExceedsMaximum() throws Exception {
+        mockMvc.perform(get("/api/posts").param("size", "101"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(postRepository);
+    }
+
+    @Test
+    void shouldRejectPostsListWhenSizeIsLessThanOne() throws Exception {
+        mockMvc.perform(get("/api/posts").param("size", "0"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(postRepository);
     }
 
     @Test
