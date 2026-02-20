@@ -9,17 +9,16 @@ import java.util.List;
 
 public class ModuleAggregateResponse {
 
-    private final Long id;
-    private final String title;
-    private final String notes;
-    private final boolean published;
+    private final CreatedModuleResponse module;
     private final List<LessonAggregateResponse> lessons;
 
     public ModuleAggregateResponse(Module module, List<LessonAggregateResponse> lessons) {
-        this.id = module.getId();
-        this.title = module.getTitle();
-        this.notes = module.getNotes();
-        this.published = module.isPublished();
+        this.module = new CreatedModuleResponse(
+                module.getId(),
+                module.getTitle(),
+                module.getNotes(),
+                module.isPublished()
+        );
         this.lessons = lessons;
     }
 
@@ -54,23 +53,41 @@ public class ModuleAggregateResponse {
         );
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public boolean isPublished() {
-        return published;
+    public CreatedModuleResponse getModule() {
+        return module;
     }
 
     public List<LessonAggregateResponse> getLessons() {
         return lessons;
+    }
+
+    public static class CreatedModuleResponse {
+        private final Long id;
+        private final String title;
+        private final String notes;
+        private final boolean published;
+
+        public CreatedModuleResponse(Long id, String title, String notes, boolean published) {
+            this.id = id;
+            this.title = title;
+            this.notes = notes;
+            this.published = published;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
+
+        public boolean isPublished() {
+            return published;
+        }
     }
 }
