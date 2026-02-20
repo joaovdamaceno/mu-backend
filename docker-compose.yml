@@ -51,6 +51,7 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-mu}
       JWT_SECRET: ${JWT_SECRET:-change-me-to-a-very-secure-32-char-secret}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
     ports:
       - "8080:8080"
 
