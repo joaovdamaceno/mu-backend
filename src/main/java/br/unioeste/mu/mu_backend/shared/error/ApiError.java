@@ -9,6 +9,6 @@ public record ApiError(
         String code,
         String message,
         String path,
-        List<String> details
+        List<ApiErrorDetail> details
 ) {
 }

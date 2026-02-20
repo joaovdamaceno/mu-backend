@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ModuleAggregateRequest {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = "Título é obrigatório")
     private String title;
 
     private String notes;
