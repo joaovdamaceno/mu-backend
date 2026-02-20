@@ -4,15 +4,22 @@ import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/modules")
+@Validated
 public class ModuleController {
+
+    private static final int MAX_PAGE_SIZE = 100;
 
     private final ModuleRepository repository;
     private final ModuleAggregateService moduleAggregateService;
@@ -23,9 +30,9 @@ public class ModuleController {
     }
 
     @GetMapping
-    public Page<ModuleResponse> list(@RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "20") int size) {
-        return repository.findAll(PageRequest.of(page, size))
+    public Page<ModuleResponse> list(@RequestParam(defaultValue = "0") @Min(0) int page,
+                                     @RequestParam(defaultValue = "20") @Min(1) @Max(MAX_PAGE_SIZE) int size) {
+        return repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id")))
                 .map(ModuleResponse::from);
     }
 

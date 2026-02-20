@@ -2,13 +2,20 @@ package br.unioeste.mu.mu_backend.post;
 
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
+@Validated
 public class PostController {
+
+    private static final int MAX_PAGE_SIZE = 100;
 
     private final PostRepository postRepository;
     private final PostSectionRepository sectionRepository;
@@ -19,9 +26,10 @@ public class PostController {
     }
 
     @GetMapping
-    public Page<Post> list(@RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "20") int size) {
-        return postRepository.findAll(PageRequest.of(page, size));
+    public Page<Post> list(@RequestParam(defaultValue = "0") @Min(0) int page,
+                           @RequestParam(defaultValue = "20") @Min(1) @Max(MAX_PAGE_SIZE) int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt", "id"));
+        return postRepository.findAll(pageRequest);
     }
 
     @GetMapping("/{id}")
