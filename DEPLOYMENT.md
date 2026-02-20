@@ -43,6 +43,31 @@ openssl rand -base64 48
 - A dependência `com.auth0:java-jwt` foi removida por não haver imports/uso no código de `src/main/java` e `src/test/java`.
 - Não há migração planejada no momento entre bibliotecas JWT; qualquer mudança futura deve ser registrada via ADR antes da adoção.
 
+## Reverse proxy and forwarded headers (Nginx/Ingress/Load Balancer)
+
+- The application uses Spring Boot `server.forward-headers-strategy=native` with Tomcat `RemoteIpValve`.
+- `AuthController` uses `request.getRemoteAddr()` only. The value is already normalized by the container when the request comes through trusted proxies.
+- Forwarding headers (`X-Forwarded-For`, `X-Forwarded-Proto`) are honored only when the immediate source IP matches the trusted proxy regex configured by:
+  - `TRUSTED_INTERNAL_PROXIES_REGEX` (defaults to loopback + RFC1918 private ranges).
+  - `TRUSTED_EDGE_PROXIES_REGEX` (optional additional trusted edge proxies).
+- If the request does **not** come from a trusted proxy, forwarded headers are ignored and the direct peer IP is used.
+
+### Expected proxy configuration
+
+Ensure your proxy/ingress forwards and appends headers (do not overwrite trusted chains unexpectedly):
+
+- `X-Forwarded-For`: preserve upstream chain and append client IP.
+- `X-Forwarded-Proto`: `http` or `https`.
+
+Example Nginx snippet:
+
+```nginx
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+For Kubernetes Ingress / external load balancers, configure equivalent forwarded-header behavior and restrict network paths so only trusted proxy IPs can reach the application directly.
+
 ## Secret rotation
 
 Any previously committed secrets should be considered compromised. Rotate database

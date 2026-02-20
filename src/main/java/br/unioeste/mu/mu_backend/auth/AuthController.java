@@ -27,7 +27,7 @@ public class AuthController {
     @Operation(summary = "Authenticate user and generate JWT", security = {})
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest req, HttpServletRequest httpServletRequest) {
-        String ipAddress = resolveClientIp(httpServletRequest);
+        String ipAddress = httpServletRequest.getRemoteAddr();
         loginAttemptLimiter.checkAllowed(ipAddress, req.username);
 
         Authentication authentication;
@@ -49,13 +49,5 @@ public class AuthController {
         loginAttemptLimiter.registerSuccess(ipAddress, req.username);
 
         return new LoginResponse(token);
-    }
-
-    private String resolveClientIp(HttpServletRequest request) {
-        String forwardedFor = request.getHeader("X-Forwarded-For");
-        if (forwardedFor == null || forwardedFor.isBlank()) {
-            return request.getRemoteAddr();
-        }
-        return forwardedFor.split(",")[0].trim();
     }
 }
