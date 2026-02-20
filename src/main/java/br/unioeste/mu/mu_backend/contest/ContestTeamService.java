@@ -3,6 +3,7 @@ package br.unioeste.mu.mu_backend.contest;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +31,7 @@ public class ContestTeamService {
         }
 
         String normalizedTeamName = normalizeTeamName(request.getTeamName());
-        String normalizedTeamNameForComparison = normalizedTeamName.toLowerCase(Locale.ROOT);
-        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamNameForComparison)) {
+        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamName)) {
             throw new ConflictException("Já existe um time com este nome neste contest");
         }
 
@@ -47,8 +47,15 @@ public class ContestTeamService {
         team.addMember(newMember(2, request.getCompetitor2Name()));
         team.addMember(newMember(3, request.getCompetitor3Name()));
 
-        ContestTeam saved = contestTeamRepository.save(team);
-        return ContestTeamResponse.from(saved);
+        try {
+            ContestTeam saved = contestTeamRepository.save(team);
+            return ContestTeamResponse.from(saved);
+        } catch (DataIntegrityViolationException ex) {
+            if (isDuplicateTeamNameConstraintViolation(ex)) {
+                throw new ConflictException("Já existe um time com este nome neste contest");
+            }
+            throw ex;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -79,5 +86,21 @@ public class ContestTeamService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private boolean isDuplicateTeamNameConstraintViolation(DataIntegrityViolationException ex) {
+        Throwable current = ex;
+        while (current != null) {
+            String message = current.getMessage();
+            if (message != null) {
+                String normalizedMessage = message.toLowerCase(Locale.ROOT);
+                if (normalizedMessage.contains("uk_contest_teams_contest_team_name")
+                        || normalizedMessage.contains("contest_teams(contest_id, lower(team_name))")) {
+                    return true;
+                }
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }
