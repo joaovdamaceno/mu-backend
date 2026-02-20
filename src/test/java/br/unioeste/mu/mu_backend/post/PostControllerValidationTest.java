@@ -56,10 +56,10 @@ class PostControllerValidationTest {
                         .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
-                .andExpect(jsonPath("$.details[?(@.field=='title')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='slug')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='authorName')]").isNotEmpty())
-                .andExpect(jsonPath("$.details[?(@.field=='status')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='title' && @.message=='Título é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='slug' && @.message=='Slug deve conter apenas letras minúsculas, números e hífens' && @.rejectedValue=='INVALID SLUG')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='authorName' && @.message=='Autor é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
+                .andExpect(jsonPath("$.details[?(@.field=='status' && @.message=='Status é obrigatório' && @.rejectedValue=='')]").isNotEmpty())
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].position')]").isNotEmpty())
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].contentValid')]").isNotEmpty());
     }
