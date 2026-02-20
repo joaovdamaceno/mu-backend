@@ -11,20 +11,17 @@ Provide these variables to configure the application in all environments:
 - `SERVER_PORT` (optional): HTTP port for the Spring Boot server (defaults to `8080`).
 
 
-## Credenciais padrão (ambiente de desenvolvimento)
+## Bootstrap de autenticação (somente dev/local)
 
-As seeds de autenticação criam os usuários:
-
-- `admin` / `password` (perfil `ADMIN`)
-- `aluno` / `password` (perfil `USER`)
-
-> **Importante:** essas credenciais são apenas para bootstrap local/homologação.
-> Em ambiente real, altere imediatamente a senha padrão (especialmente de `admin`)
-> e utilize segredos exclusivos por ambiente.
+- Produção (`prod`) **não** cria contas padrão automaticamente.
+- O bootstrap em código só roda com perfil `dev` ou `local`.
+- Para criar o usuário administrativo local (`admin`), defina `BOOTSTRAP_ADMIN_PASSWORD` com uma senha forte.
+- Se `BOOTSTRAP_ADMIN_PASSWORD` não for definida, nenhum usuário de autenticação é criado automaticamente.
+- O processo é idempotente: se `admin` já existir, o bootstrap não recria o usuário.
 
 ## Banco e dados iniciais
 
-- O Flyway cria/atualiza o schema e também semeia os usuários de autenticação padrão (`admin` e `aluno`) via migration versionada.
+- O Flyway cria/atualiza apenas o schema e não semeia usuários de autenticação padrão.
 - O `populate.sql` preenche apenas dados de conteúdo/domínio (módulos, aulas, exercícios, posts e inscrições) e não altera a tabela `users`.
 
 ## Secret rotation
