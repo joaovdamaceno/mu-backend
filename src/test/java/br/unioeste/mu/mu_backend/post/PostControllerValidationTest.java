@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,4 +63,35 @@ class PostControllerValidationTest {
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].position')]").isNotEmpty())
                 .andExpect(jsonPath("$.details[?(@.field=='sections[0].contentValid')]").isNotEmpty());
     }
+
+    @Test
+    void shouldReturnNotFoundContractWhenPostDoesNotExistOnGet() throws Exception {
+        long postId = 99L;
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/posts/{id}", postId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("Post não encontrado para id=" + postId))
+                .andExpect(jsonPath("$.path").value("/api/posts/" + postId))
+                .andExpect(jsonPath("$.details").isArray());
+    }
+
+    @Test
+    void shouldReturnNotFoundContractWhenPostDoesNotExistOnDelete() throws Exception {
+        long postId = 77L;
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/api/posts/{id}", postId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("Post não encontrado para id=" + postId))
+                .andExpect(jsonPath("$.path").value("/api/posts/" + postId))
+                .andExpect(jsonPath("$.details").isArray());
+    }
+
 }
