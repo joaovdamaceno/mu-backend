@@ -2,6 +2,9 @@ package br.unioeste.mu.mu_backend.contest;
 
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +27,11 @@ public class ContestController {
     }
 
     @GetMapping
-    public List<ContestResponse> list() {
-        return contestRepository.findAll()
-                .stream()
-                .map(ContestResponse::from)
-                .toList();
+    public Page<ContestResponse> list(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDateTime"));
+        return contestRepository.findAll(pageRequest)
+                .map(ContestResponse::from);
     }
 
     @GetMapping("/{id}")
