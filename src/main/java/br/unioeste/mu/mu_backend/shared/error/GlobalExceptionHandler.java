@@ -21,12 +21,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Pattern POSTGRES_CONSTRAINT_PATTERN = Pattern.compile("(?i)constraint\\s+\"([^\"]+)\"");
+
+    private static final Map<String, ConstraintInfo> CONSTRAINT_MESSAGE_MAP = Map.of(
+            "registrations_email_unique", new ConstraintInfo("email", "email já cadastrado")
+    );
 
     private static final Set<String> SENSITIVE_FIELD_NAMES = Set.of(
             "password", "token", "secret", "authorization", "accessToken", "refreshToken"
@@ -176,6 +187,35 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        Optional<String> constraintName = extractConstraintName(ex);
+
+        if (constraintName.isPresent()) {
+            String constraint = constraintName.get();
+            ConstraintInfo mappedConstraint = CONSTRAINT_MESSAGE_MAP.get(constraint);
+
+            String field = mappedConstraint != null
+                    ? mappedConstraint.field()
+                    : inferFieldFromConstraint(constraint);
+
+            String message = mappedConstraint != null
+                    ? mappedConstraint.message()
+                    : "Violação de integridade dos dados.";
+
+            List<ApiErrorDetail> details = new ArrayList<>();
+            details.add(new ApiErrorDetail("constraint", "Constraint violada", constraint));
+            if (field != null) {
+                details.add(new ApiErrorDetail("field", "Campo associado", field));
+            }
+
+            return buildResponse(
+                    HttpStatus.CONFLICT,
+                    ErrorCode.CONFLICT,
+                    message,
+                    request.getRequestURI(),
+                    details
+            );
+        }
+
         return buildResponse(
                 HttpStatus.CONFLICT,
                 ErrorCode.CONFLICT,
@@ -184,6 +224,60 @@ public class GlobalExceptionHandler {
                 List.of()
         );
     }
+
+    private Optional<String> extractConstraintName(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            String constraintFromProperty = extractConstraintNameFromProperty(current);
+            if (constraintFromProperty != null) {
+                return Optional.of(constraintFromProperty);
+            }
+
+            String constraintFromMessage = extractConstraintNameFromMessage(current.getMessage());
+            if (constraintFromMessage != null) {
+                return Optional.of(constraintFromMessage);
+            }
+
+            current = current.getCause();
+        }
+
+        return Optional.empty();
+    }
+
+    private String extractConstraintNameFromProperty(Throwable throwable) {
+        try {
+            var method = throwable.getClass().getMethod("getConstraintName");
+            Object value = method.invoke(throwable);
+            if (value instanceof String constraint && !constraint.isBlank()) {
+                return constraint;
+            }
+        } catch (ReflectiveOperationException ignored) {
+            // fallback para extração via mensagem
+        }
+        return null;
+    }
+
+    private String extractConstraintNameFromMessage(String message) {
+        if (message == null || message.isBlank()) {
+            return null;
+        }
+
+        Matcher matcher = POSTGRES_CONSTRAINT_PATTERN.matcher(message);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private String inferFieldFromConstraint(String constraintName) {
+        String[] parts = constraintName.split("_");
+        if (parts.length >= 2) {
+            return parts[1];
+        }
+        return null;
+    }
+
+    private record ConstraintInfo(String field, String message) {}
 
     @ExceptionHandler({AuthenticationException.class, AuthenticationCredentialsNotFoundException.class})
     public ResponseEntity<ApiError> handleAuthenticationException(Exception ex, HttpServletRequest request) {
