@@ -24,6 +24,12 @@ Provide these variables to configure the application in all environments:
 - O Flyway cria/atualiza apenas o schema e não semeia usuários de autenticação padrão.
 - O `populate.sql` preenche apenas dados de conteúdo/domínio (módulos, aulas, exercícios, posts e inscrições) e não altera a tabela `users`.
 
+## JWT library decision
+
+- O projeto está padronizado em `io.jsonwebtoken` (JJWT) para emissão e validação de tokens.
+- A dependência `com.auth0:java-jwt` foi removida por não haver imports/uso no código de `src/main/java` e `src/test/java`.
+- Não há migração planejada no momento entre bibliotecas JWT; qualquer mudança futura deve ser registrada via ADR antes da adoção.
+
 ## Secret rotation
 
 Any previously committed secrets should be considered compromised. Rotate database
