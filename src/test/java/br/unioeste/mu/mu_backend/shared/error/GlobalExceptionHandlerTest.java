@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -121,6 +123,27 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().code()).isEqualTo("CONFLICT");
         assertThat(response.getBody().message()).isEqualTo("Violação de integridade dos dados.");
         assertThat(response.getBody().details()).isEmpty();
+    }
+
+
+    @Test
+    void shouldReturnUnauthorizedForBadCredentialsException() {
+        ResponseEntity<ApiError> response = handler.handleAuthenticationException(new BadCredentialsException("bad creds"), request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo("UNAUTHORIZED");
+        assertThat(response.getBody().message()).isEqualTo("Não autorizado.");
+    }
+
+    @Test
+    void shouldReturnUnauthorizedForGenericAuthenticationException() {
+        ResponseEntity<ApiError> response = handler.handleAuthenticationException(new InsufficientAuthenticationException("auth required"), request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo("UNAUTHORIZED");
+        assertThat(response.getBody().message()).isEqualTo("Não autorizado.");
     }
 
     private static class DummyController {

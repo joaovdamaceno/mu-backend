@@ -1,6 +1,7 @@
 package br.unioeste.mu.mu_backend.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +21,7 @@ public class AuthController {
 
     @Operation(summary = "Authenticate user and generate JWT", security = {})
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest req) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest req) {
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.username, req.password)
