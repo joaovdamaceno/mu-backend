@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -89,6 +90,37 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().details().get(0).message())
                 .isEqualTo("Tipo incompatível para o campo 'orderIndex'. Tipo esperado: Integer.");
         assertThat(response.getBody().details().get(0).rejectedValue()).isEqualTo("abc");
+    }
+
+    @Test
+    void shouldMapKnownConstraintToFriendlyConflictMessage() {
+        RuntimeException cause = new RuntimeException("ERROR: duplicate key value violates unique constraint \"registrations_email_unique\"");
+        DataIntegrityViolationException exception = new DataIntegrityViolationException("Violação", cause);
+
+        ResponseEntity<ApiError> response = handler.handleDataIntegrityViolation(exception, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo("CONFLICT");
+        assertThat(response.getBody().message()).isEqualTo("email já cadastrado");
+        assertThat(response.getBody().details()).hasSize(2);
+        assertThat(response.getBody().details().get(0).field()).isEqualTo("constraint");
+        assertThat(response.getBody().details().get(0).rejectedValue()).isEqualTo("registrations_email_unique");
+        assertThat(response.getBody().details().get(1).field()).isEqualTo("field");
+        assertThat(response.getBody().details().get(1).rejectedValue()).isEqualTo("email");
+    }
+
+    @Test
+    void shouldReturnSafeFallbackWhenConstraintCannotBeIdentified() {
+        DataIntegrityViolationException exception = new DataIntegrityViolationException("Violação", new RuntimeException("erro genérico"));
+
+        ResponseEntity<ApiError> response = handler.handleDataIntegrityViolation(exception, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo("CONFLICT");
+        assertThat(response.getBody().message()).isEqualTo("Violação de integridade dos dados.");
+        assertThat(response.getBody().details()).isEmpty();
     }
 
     private static class DummyController {
