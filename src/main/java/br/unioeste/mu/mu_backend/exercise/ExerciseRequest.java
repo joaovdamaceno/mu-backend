@@ -2,11 +2,13 @@ package br.unioeste.mu.mu_backend.exercise;
 
 import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.module.Module;
+import br.unioeste.mu.mu_backend.shared.validation.HttpOrHttpsUrl;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExerciseRequest {
 
@@ -17,6 +19,7 @@ public class ExerciseRequest {
     private String ojName;
 
     @NotBlank(message = "URL do juiz online é obrigatória")
+    @HttpOrHttpsUrl(message = "URL do juiz online deve ser válida e usar http:// ou https://")
     private String ojUrl;
 
     @NotNull(message = "Dificuldade é obrigatória")
@@ -29,14 +32,30 @@ public class ExerciseRequest {
 
     public Exercise toExercise(Module module, Lesson lesson) {
         Exercise exercise = new Exercise();
-        exercise.setTitle(this.title);
-        exercise.setOjName(this.ojName);
-        exercise.setOjUrl(this.ojUrl);
+        exercise.setTitle(normalizeRequired(title));
+        exercise.setOjName(normalizeRequired(ojName));
+        exercise.setOjUrl(normalizeRequired(ojUrl));
         exercise.setDifficulty(this.difficulty);
-        exercise.setTags(this.tags);
+        exercise.setTags(normalizeTags(tags));
         exercise.setModule(module);
         exercise.setLesson(lesson);
         return exercise;
+    }
+
+    private String normalizeRequired(String value) {
+        return value == null ? null : value.trim();
+    }
+
+    private List<String> normalizeTags(List<String> values) {
+        if (values == null) {
+            return new ArrayList<>();
+        }
+
+        return values.stream()
+                .filter(tag -> tag != null)
+                .map(String::trim)
+                .filter(tag -> !tag.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public String getTitle() {

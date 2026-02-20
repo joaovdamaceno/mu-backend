@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.contest;
 
+import br.unioeste.mu.mu_backend.shared.validation.HttpOrHttpsUrl;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -23,14 +24,19 @@ public class ContestRequest {
     private boolean teamBased;
 
     @Size(max = 2000, message = "URL do espelho Codeforces deve ter no máximo 2000 caracteres")
+    @HttpOrHttpsUrl(message = "URL do espelho Codeforces deve ser válida e usar http:// ou https://", allowBlank = true)
     private String codeforcesMirrorUrl;
 
     public void applyTo(Contest contest) {
-        contest.setName(name == null ? null : name.trim());
+        contest.setName(normalizeRequired(name));
         contest.setDurationMinutes(durationMinutes);
         contest.setStartDateTime(startDateTime);
         contest.setTeamBased(teamBased);
         contest.setCodeforcesMirrorUrl(normalizeNullable(codeforcesMirrorUrl));
+    }
+
+    private String normalizeRequired(String value) {
+        return value == null ? null : value.trim();
     }
 
     private String normalizeNullable(String value) {

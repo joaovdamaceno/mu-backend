@@ -1,6 +1,7 @@
 package br.unioeste.mu.mu_backend.lesson;
 
 import br.unioeste.mu.mu_backend.module.Module;
+import br.unioeste.mu.mu_backend.shared.validation.HttpOrHttpsUrl;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -16,6 +17,7 @@ public class LessonRequest {
     private String summary;
 
     @NotBlank(message = "URL do vídeo é obrigatória")
+    @HttpOrHttpsUrl(message = "URL do vídeo deve ser válida e usar http:// ou https://")
     private String videoUrl;
 
     @NotNull(message = "Ordem é obrigatória")
@@ -26,13 +28,17 @@ public class LessonRequest {
 
     public Lesson toLesson(Module module) {
         Lesson lesson = new Lesson();
-        lesson.setTitle(this.title);
-        lesson.setSlug(this.slug);
-        lesson.setSummary(this.summary);
-        lesson.setVideoUrl(this.videoUrl);
+        lesson.setTitle(normalizeRequired(title));
+        lesson.setSlug(normalizeRequired(slug));
+        lesson.setSummary(normalizeRequired(summary));
+        lesson.setVideoUrl(normalizeRequired(videoUrl));
         lesson.setOrderIndex(this.orderIndex);
         lesson.setModule(module);
         return lesson;
+    }
+
+    private String normalizeRequired(String value) {
+        return value == null ? null : value.trim();
     }
 
     public String getTitle() {
