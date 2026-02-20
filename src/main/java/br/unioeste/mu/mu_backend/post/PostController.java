@@ -69,9 +69,9 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        if (!postRepository.existsById(id)) {
-            throw new NotFoundException("Post não encontrado para id=" + id);
-        }
-        postRepository.deleteById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
+
+        postRepository.delete(post);
     }
 }
