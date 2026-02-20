@@ -2,10 +2,9 @@ package br.unioeste.mu.mu_backend.lesson;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class LessonController {
     @GetMapping
     public List<LessonResponse> list(@PathVariable Long moduleId) {
         Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
         return lessonRepository.findByModuleOrderByOrderIndexAsc(module)
                 .stream()
                 .map(LessonResponse::from)
@@ -38,7 +37,7 @@ public class LessonController {
     @PostMapping
     public LessonResponse create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
         Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
         Lesson lesson = request.toLesson(module);
         return LessonResponse.from(lessonRepository.save(lesson));
     }

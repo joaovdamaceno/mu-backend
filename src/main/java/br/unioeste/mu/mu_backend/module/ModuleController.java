@@ -2,13 +2,13 @@ package br.unioeste.mu.mu_backend.module;
 
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/modules")
@@ -37,7 +37,7 @@ public class ModuleController {
     public ModuleResponse get(@PathVariable Long id) {
         return repository.findById(id)
                 .map(ModuleResponse::from)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));
     }
 
     @PostMapping
@@ -56,7 +56,7 @@ public class ModuleController {
     @PutMapping("/{id}")
     public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody Module module) {
         Module existing = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));
         existing.setTitle(module.getTitle());
         existing.setNotes(module.getNotes());
         existing.setPublished(module.isPublished());
@@ -66,7 +66,7 @@ public class ModuleController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         Module module = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));
         repository.delete(module);
     }
 }
