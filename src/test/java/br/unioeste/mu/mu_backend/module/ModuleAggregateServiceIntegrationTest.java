@@ -7,6 +7,7 @@ import br.unioeste.mu.mu_backend.material.ExtraMaterialRepository;
 import br.unioeste.mu.mu_backend.module.aggregate.ExerciseAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
+import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -59,6 +61,24 @@ class ModuleAggregateServiceIntegrationTest {
         assertEquals(lessonsBefore, lessonRepository.count());
         assertEquals(exercisesBefore, exerciseRepository.count());
         assertEquals(extraMaterialsBefore, extraMaterialRepository.count());
+    }
+
+    @Test
+    void shouldReturnAggregateResponseWithPersistedIds() {
+        ModuleAggregateRequest request = new ModuleAggregateRequest();
+        request.setTitle("Módulo agregado");
+        request.setNotes("Notas do módulo");
+
+        LessonAggregateRequest lesson = buildLesson("Lição única", "licao-unica", 1);
+        request.setLessons(List.of(lesson));
+
+        ModuleAggregateResponse response = moduleAggregateService.createFullModule(request);
+
+        assertNotNull(response.getModule().getId());
+        assertEquals("Módulo agregado", response.getModule().getTitle());
+        assertEquals(1, response.getLessons().size());
+        assertNotNull(response.getLessons().get(0).getId());
+        assertNotNull(response.getLessons().get(0).getExercises().get(0).getId());
     }
 
     private LessonAggregateRequest buildLesson(String title, String slug, Integer orderIndex) {
