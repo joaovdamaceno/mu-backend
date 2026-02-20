@@ -10,6 +10,18 @@ Provide these variables to configure the application in all environments:
 - `JWT_SECRET`: HMAC signing secret (use a rotated value of at least 32 characters).
 - `SERVER_PORT` (optional): HTTP port for the Spring Boot server (defaults to `8080`).
 
+### JWT_SECRET requirements
+
+- `JWT_SECRET` is mandatory for runtime profiles (for example, `prod` and staging); no default fallback is provided by the application configuration.
+- Minimum size: **32 bytes** (HS256 requirement enforced at startup).
+- Generate using a cryptographically secure source, for example:
+
+```bash
+openssl rand -base64 48
+```
+
+- Store in your environment/secret manager (Kubernetes Secret, CI/CD secret store, Vault, etc.) and never commit it to version control.
+
 
 ## Bootstrap de autenticação (somente dev/local)
 
