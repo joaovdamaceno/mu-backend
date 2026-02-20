@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.function.Function;
+
 @RestController
 @RequestMapping("/api/posts")
 @Validated
@@ -18,38 +20,38 @@ public class PostController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final PostRepository postRepository;
-    private final PostSectionRepository sectionRepository;
+    private static final Function<Post, PostResponse> TO_RESPONSE = PostResponse::from;
 
-    public PostController(PostRepository postRepository, PostSectionRepository sectionRepository) {
+    public PostController(PostRepository postRepository) {
         this.postRepository = postRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @GetMapping
-    public Page<Post> list(@RequestParam(defaultValue = "0") @Min(0) int page,
-                           @RequestParam(defaultValue = "20") @Min(1) @Max(MAX_PAGE_SIZE) int size) {
+    public Page<PostResponse> list(@RequestParam(defaultValue = "0") @Min(0) int page,
+                                   @RequestParam(defaultValue = "20") @Min(1) @Max(MAX_PAGE_SIZE) int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt", "id"));
-        return postRepository.findAll(pageRequest);
+        return postRepository.findAll(pageRequest).map(TO_RESPONSE);
     }
 
     @GetMapping("/{id}")
-    public Post get(@PathVariable Long id) {
+    public PostResponse get(@PathVariable Long id) {
         return postRepository.findById(id)
+                .map(TO_RESPONSE)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
     }
 
     @PostMapping
-    public Post create(@Valid @RequestBody Post post) {
+    public PostResponse create(@Valid @RequestBody Post post) {
         if (post.getSections() != null) {
             for (PostSection section : post.getSections()) {
                 section.setPost(post);
             }
         }
-        return postRepository.save(post);
+        return TO_RESPONSE.apply(postRepository.save(post));
     }
 
     @PutMapping("/{id}")
-    public Post update(@PathVariable Long id, @Valid @RequestBody Post updatedPost) {
+    public PostResponse update(@PathVariable Long id, @Valid @RequestBody Post updatedPost) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
 
@@ -68,7 +70,7 @@ public class PostController {
             }
         }
 
-        return postRepository.save(post);
+        return TO_RESPONSE.apply(postRepository.save(post));
     }
 
     @DeleteMapping("/{id}")
