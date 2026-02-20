@@ -19,11 +19,9 @@ public class ContestTeamRegistrationRequest {
     @Size(max = 120, message = "Nome do competidor 1 deve ter no máximo 120 caracteres")
     private String competitor1Name;
 
-    @NotBlank(message = "Competidor 2 é obrigatório")
     @Size(max = 120, message = "Nome do competidor 2 deve ter no máximo 120 caracteres")
     private String competitor2Name;
 
-    @NotBlank(message = "Competidor 3 é obrigatório")
     @Size(max = 120, message = "Nome do competidor 3 deve ter no máximo 120 caracteres")
     private String competitor3Name;
 
