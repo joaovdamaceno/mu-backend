@@ -1,6 +1,7 @@
 package br.unioeste.mu.mu_backend.post;
 
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class PostController {
     }
 
     @PostMapping
-    public Post create(@RequestBody Post post) {
+    public Post create(@Valid @RequestBody Post post) {
         if (post.getSections() != null) {
             for (PostSection section : post.getSections()) {
                 section.setPost(post);
@@ -44,7 +45,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public Post update(@PathVariable Long id, @RequestBody Post updatedPost) {
+    public Post update(@PathVariable Long id, @Valid @RequestBody Post updatedPost) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
 
