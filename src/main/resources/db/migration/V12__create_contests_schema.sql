@@ -20,6 +20,19 @@ CREATE TABLE IF NOT EXISTS contest_teams (
     created_at         TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'uk_contest_teams_contest_id_team_name'
+    ) THEN
+        ALTER TABLE contest_teams
+            ADD CONSTRAINT uk_contest_teams_contest_id_team_name UNIQUE (contest_id, team_name);
+    END IF;
+END;
+$$;
+
 CREATE TABLE IF NOT EXISTS contest_team_members (
     id             BIGSERIAL PRIMARY KEY,
     team_id         BIGINT NOT NULL REFERENCES contest_teams(id) ON DELETE CASCADE,

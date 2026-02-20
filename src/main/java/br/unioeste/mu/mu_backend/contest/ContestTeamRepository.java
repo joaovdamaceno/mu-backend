@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ContestTeamRepository extends JpaRepository<ContestTeam, Long> {
 
+    boolean existsByContestIdAndTeamNameIgnoreCase(Long contestId, String teamName);
+
     @Query("""
             SELECT DISTINCT t
             FROM ContestTeam t

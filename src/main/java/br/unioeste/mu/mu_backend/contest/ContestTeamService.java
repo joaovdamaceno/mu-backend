@@ -1,11 +1,13 @@
 package br.unioeste.mu.mu_backend.contest;
 
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
+import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ContestTeamService {
@@ -27,9 +29,15 @@ public class ContestTeamService {
             throw new BusinessValidationException("Este contest é individual e não aceita inscrição de times");
         }
 
+        String normalizedTeamName = normalizeTeamName(request.getTeamName());
+        String normalizedTeamNameForComparison = normalizedTeamName.toLowerCase(Locale.ROOT);
+        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamNameForComparison)) {
+            throw new ConflictException("Já existe um time com este nome neste contest");
+        }
+
         ContestTeam team = new ContestTeam();
         team.setContest(contest);
-        team.setTeamName(request.getTeamName().trim());
+        team.setTeamName(normalizedTeamName);
         team.setCoachName(trimToNull(request.getCoachName()));
         team.setInstitution(trimToNull(request.getInstitution()));
         team.setReserveName(trimToNull(request.getReserveName()));
@@ -59,6 +67,10 @@ public class ContestTeamService {
         member.setMemberIndex(index);
         member.setMemberName(name.trim());
         return member;
+    }
+
+    private String normalizeTeamName(String teamName) {
+        return teamName.trim();
     }
 
     private String trimToNull(String value) {
