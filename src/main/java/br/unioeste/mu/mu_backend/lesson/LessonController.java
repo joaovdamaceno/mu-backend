@@ -35,7 +35,8 @@ public class LessonController {
     public LessonResponse create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
-        Lesson lesson = request.toLesson(module);
+        Lesson lesson = new Lesson();
+        request.applyTo(lesson, module);
         return LessonResponse.from(lessonRepository.save(lesson));
     }
 
@@ -52,12 +53,7 @@ public class LessonController {
             throw new BusinessValidationException("Lição id=" + lessonId + " não pertence ao módulo id=" + moduleId);
         }
 
-        lesson.setTitle(request.getTitle());
-        lesson.setSlug(request.getSlug());
-        lesson.setSummary(request.getSummary());
-        lesson.setVideoUrl(request.getVideoUrl());
-        lesson.setOrderIndex(request.getOrderIndex());
-        lesson.setModule(module);
+        request.applyTo(lesson, module);
 
         return LessonResponse.from(lessonRepository.save(lesson));
     }

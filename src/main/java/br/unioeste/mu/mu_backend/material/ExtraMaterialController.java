@@ -32,7 +32,8 @@ public class ExtraMaterialController {
     public ExtraMaterial create(@PathVariable Long lessonId, @Valid @RequestBody ExtraMaterialRequest request) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lição não encontrada para id=" + lessonId));
-        ExtraMaterial material = request.toExtraMaterial(lesson);
+        ExtraMaterial material = new ExtraMaterial();
+        request.applyTo(material, lesson);
         return extraMaterialRepository.save(material);
     }
 
@@ -50,9 +51,7 @@ public class ExtraMaterialController {
             throw new BusinessValidationException("Material extra id=" + materialId + " não pertence à lição id=" + lessonId);
         }
 
-        material.setType(request.getType());
-        material.setUrl(request.getUrl());
-        material.setLesson(lesson);
+        request.applyTo(material, lesson);
 
         return extraMaterialRepository.save(material);
     }

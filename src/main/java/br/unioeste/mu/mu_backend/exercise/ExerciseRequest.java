@@ -32,6 +32,11 @@ public class ExerciseRequest {
 
     public Exercise toExercise(Module module, Lesson lesson) {
         Exercise exercise = new Exercise();
+        applyTo(exercise, module, lesson);
+        return exercise;
+    }
+
+    public void applyTo(Exercise exercise, Module module, Lesson lesson) {
         exercise.setTitle(normalizeRequired(title));
         exercise.setOjName(normalizeRequired(ojName));
         exercise.setOjUrl(normalizeRequired(ojUrl));
@@ -39,7 +44,6 @@ public class ExerciseRequest {
         exercise.setTags(normalizeTags(tags));
         exercise.setModule(module);
         exercise.setLesson(lesson);
-        return exercise;
     }
 
     private String normalizeRequired(String value) {

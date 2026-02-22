@@ -99,6 +99,11 @@ class RequestUrlValidationAndNormalizationTest {
         assertThat(lesson.getSummary()).isEqualTo("Resumo");
         assertThat(lesson.getVideoUrl()).isEqualTo("https://example.com/video");
 
+        Lesson lessonForUpdate = new Lesson();
+        lessonRequest.applyTo(lessonForUpdate, new Module());
+        assertThat(lessonForUpdate.getTitle()).isEqualTo("Aula 01");
+        assertThat(lessonForUpdate.getSlug()).isEqualTo("aula-01");
+
         ExerciseRequest exerciseRequest = buildValidExerciseRequest();
         exerciseRequest.setTitle("  Soma  ");
         exerciseRequest.setOjName("  Codeforces  ");
@@ -112,6 +117,11 @@ class RequestUrlValidationAndNormalizationTest {
         assertThat(exercise.getOjUrl()).isEqualTo("https://codeforces.com/problemset/problem/1/A");
         assertThat(exercise.getTags()).containsExactly("ad-hoc", "math");
 
+        Exercise exerciseForUpdate = new Exercise();
+        exerciseRequest.applyTo(exerciseForUpdate, new Module(), new Lesson());
+        assertThat(exerciseForUpdate.getTitle()).isEqualTo("Soma");
+        assertThat(exerciseForUpdate.getTags()).containsExactly("ad-hoc", "math");
+
         ExtraMaterialRequest extraMaterialRequest = buildValidExtraMaterialRequest();
         extraMaterialRequest.setType("  slides  ");
         extraMaterialRequest.setUrl("  https://example.com/slides  ");
@@ -120,6 +130,11 @@ class RequestUrlValidationAndNormalizationTest {
 
         assertThat(extraMaterial.getType()).isEqualTo("slides");
         assertThat(extraMaterial.getUrl()).isEqualTo("https://example.com/slides");
+
+        ExtraMaterial extraMaterialForUpdate = new ExtraMaterial();
+        extraMaterialRequest.applyTo(extraMaterialForUpdate, new Lesson());
+        assertThat(extraMaterialForUpdate.getType()).isEqualTo("slides");
+        assertThat(extraMaterialForUpdate.getUrl()).isEqualTo("https://example.com/slides");
 
         ContestRequest contestRequest = buildValidContestRequest();
         contestRequest.setName("  Contest 01  ");
