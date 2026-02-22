@@ -7,6 +7,7 @@ import br.unioeste.mu.mu_backend.module.ModuleRepository;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class ExerciseController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ExerciseResponse create(@PathVariable Long moduleId, @PathVariable Long lessonId, @Valid @RequestBody ExerciseRequest request) {
         Module module = findModule(moduleId);
         Lesson lesson = findLesson(lessonId);

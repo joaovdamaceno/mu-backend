@@ -79,7 +79,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         mockMvc.perform(post("/api/modules/{moduleId}/lessons", 10)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Aula 01"))
                 .andExpect(jsonPath("$.slug").value("aula-01"))
                 .andExpect(jsonPath("$.summary").value("Resumo inicial"))
@@ -138,7 +138,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         mockMvc.perform(post("/api/modules/{moduleId}/lessons/{lessonId}/exercises", 11, 21)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Soma"))
                 .andExpect(jsonPath("$.ojName").value("Codeforces"))
                 .andExpect(jsonPath("$.ojUrl").value("https://codeforces.com/problemset/problem/1/A"))
@@ -193,7 +193,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         mockMvc.perform(post("/api/lessons/{lessonId}/materials", 22)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.type").value("slides"))
                 .andExpect(jsonPath("$.url").value("https://example.com/slides"));
 

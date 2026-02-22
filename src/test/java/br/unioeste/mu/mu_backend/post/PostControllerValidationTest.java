@@ -100,6 +100,34 @@ class PostControllerValidationTest {
         verifyNoInteractions(postRepository);
     }
 
+
+    @Test
+    void shouldReturnCreatedWhenCreatingPost() throws Exception {
+        Post saved = new Post();
+        saved.setTitle("Post válido");
+        saved.setSlug("post-valido");
+        saved.setAuthorName("Autor");
+        saved.setStatus("PUBLISHED");
+
+        when(postRepository.save(any(Post.class))).thenReturn(saved);
+
+        String payload = """
+                {
+                  "title": "Post válido",
+                  "slug": "post-valido",
+                  "authorName": "Autor",
+                  "status": "PUBLISHED",
+                  "sections": []
+                }
+                """;
+
+        mockMvc.perform(post("/api/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Post válido"));
+    }
+
     @Test
     void shouldApplyPaginationAndSortingForPostsList() throws Exception {
         Post post = new Post();

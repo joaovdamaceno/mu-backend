@@ -44,6 +44,7 @@ public class ModuleController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create module (legacy endpoint). Prefer POST /api/modules/full for the form flow")
     public ModuleResponse create(@Valid @RequestBody ModuleRequest request) {
         return ModuleResponse.from(repository.save(request.toModule()));
