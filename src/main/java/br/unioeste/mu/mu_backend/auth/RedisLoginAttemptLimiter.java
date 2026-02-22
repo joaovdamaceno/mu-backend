@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Component
-@Profile("!dev & !local")
+@Profile("!dev & !local & !test")
 public class RedisLoginAttemptLimiter implements LoginAttemptLimiter {
 
     private static final Logger log = LoggerFactory.getLogger(RedisLoginAttemptLimiter.class);
