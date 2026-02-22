@@ -28,13 +28,17 @@ public class LessonRequest {
 
     public Lesson toLesson(Module module) {
         Lesson lesson = new Lesson();
+        applyTo(lesson, module);
+        return lesson;
+    }
+
+    public void applyTo(Lesson lesson, Module module) {
         lesson.setTitle(normalizeRequired(title));
         lesson.setSlug(normalizeRequired(slug));
         lesson.setSummary(normalizeRequired(summary));
         lesson.setVideoUrl(normalizeRequired(videoUrl));
         lesson.setOrderIndex(this.orderIndex);
         lesson.setModule(module);
-        return lesson;
     }
 
     private String normalizeRequired(String value) {

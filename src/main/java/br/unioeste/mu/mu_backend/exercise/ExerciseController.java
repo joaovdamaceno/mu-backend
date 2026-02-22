@@ -42,7 +42,8 @@ public class ExerciseController {
         Lesson lesson = findLesson(lessonId);
         validateLessonBelongsToModule(moduleId, lesson);
 
-        Exercise exercise = request.toExercise(module, lesson);
+        Exercise exercise = new Exercise();
+        request.applyTo(exercise, module, lesson);
         return ExerciseResponse.from(exerciseRepository.save(exercise));
     }
 
@@ -62,13 +63,7 @@ public class ExerciseController {
             throw new BusinessValidationException("Exercício id=" + exerciseId + " não pertence à lição id=" + lessonId);
         }
 
-        exercise.setTitle(request.getTitle());
-        exercise.setOjName(request.getOjName());
-        exercise.setOjUrl(request.getOjUrl());
-        exercise.setDifficulty(request.getDifficulty());
-        exercise.setTags(request.getTags());
-        exercise.setModule(module);
-        exercise.setLesson(lesson);
+        request.applyTo(exercise, module, lesson);
 
         return ExerciseResponse.from(exerciseRepository.save(exercise));
     }

@@ -34,10 +34,14 @@ public class ExtraMaterialRequest {
 
     public ExtraMaterial toExtraMaterial(Lesson lesson) {
         ExtraMaterial material = new ExtraMaterial();
+        applyTo(material, lesson);
+        return material;
+    }
+
+    public void applyTo(ExtraMaterial material, Lesson lesson) {
         material.setType(normalizeRequired(type));
         material.setUrl(normalizeRequired(url));
         material.setLesson(lesson);
-        return material;
     }
 
     private String normalizeRequired(String value) {
