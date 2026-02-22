@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -18,9 +19,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,6 +62,49 @@ class RegistrationEndpointSecurityWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(validPayload()))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldDenyAnonymousGetRegistrationsList() throws Exception {
+        mockMvc.perform(get("/api/registrations"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldDenyAnonymousGetRegistrationById() throws Exception {
+        mockMvc.perform(get("/api/registrations/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldAllowAdminGetRegistrationsList() throws Exception {
+        Registration registration = buildRegistration();
+        when(registrationRepository.findAll()).thenReturn(List.of(registration));
+
+        mockMvc.perform(get("/api/registrations"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldAllowAdminGetRegistrationById() throws Exception {
+        Registration registration = buildRegistration();
+        when(registrationRepository.findById(1L)).thenReturn(Optional.of(registration));
+
+        mockMvc.perform(get("/api/registrations/1"))
+                .andExpect(status().isOk());
+    }
+
+    private Registration buildRegistration() {
+        Registration registration = new Registration();
+        registration.setName("Maria");
+        registration.setEmail("maria@example.com");
+        registration.setCampus("Campus A");
+        registration.setCourse("Curso A");
+        registration.setSemester("1");
+        registration.setHowDidYouHear("Instagram");
+        return registration;
     }
 
     private String validPayload() {
