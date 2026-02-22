@@ -5,6 +5,7 @@ import br.unioeste.mu.mu_backend.module.ModuleRepository;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class LessonController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public LessonResponse create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));

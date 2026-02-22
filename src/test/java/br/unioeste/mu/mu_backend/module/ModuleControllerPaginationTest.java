@@ -63,6 +63,31 @@ class ModuleControllerPaginationTest {
         verifyNoInteractions(moduleRepository);
     }
 
+
+    @Test
+    void shouldReturnCreatedWhenCreatingLegacyModule() throws Exception {
+        Module module = new Module();
+        module.setTitle("Módulo 1");
+        module.setNotes("Notas");
+        module.setPublished(true);
+
+        when(moduleRepository.save(any(Module.class))).thenReturn(module);
+
+        String payload = """
+                {
+                  "title": "Módulo 1",
+                  "notes": "Notas",
+                  "published": true
+                }
+                """;
+
+        mockMvc.perform(post("/api/modules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Módulo 1"));
+    }
+
     @Test
     void shouldApplyPaginationAndSortingForModulesList() throws Exception {
         Module module = new Module();

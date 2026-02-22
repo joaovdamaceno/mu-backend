@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class PostController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public PostResponse create(@Valid @RequestBody PostRequest request) {
         return TO_RESPONSE.apply(postRepository.save(request.toPost()));
     }
