@@ -37,6 +37,12 @@ openssl rand -base64 48
 - O Flyway cria/atualiza apenas o schema e não semeia usuários de autenticação padrão.
 - O `populate.sql` preenche apenas dados de conteúdo/domínio (módulos, aulas, exercícios, posts e inscrições) e não altera a tabela `users`.
 
+## Database schema change policy
+
+- Keep `spring.jpa.hibernate.ddl-auto=validate` in runtime profiles (`dev`, `local`, `prod`) to prevent non-versioned automatic DDL changes.
+- All schema evolutions must be delivered through Flyway scripts under `src/main/resources/db/migration`.
+- Any database change must include a new migration file (`V<next>__description.sql`) and be reviewed/versioned in Git before deployment.
+
 ## JWT library decision
 
 - O projeto está padronizado em `io.jsonwebtoken` (JJWT) para emissão e validação de tokens.
