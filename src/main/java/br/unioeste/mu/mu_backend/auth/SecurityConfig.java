@@ -85,7 +85,25 @@ public class SecurityConfig {
                         .requestMatchers("/docs", "/docs/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/modules",
+                                "/api/modules/*",
+                                "/api/modules/*/lessons",
+                                "/api/modules/*/lessons/*/exercises",
+                                "/api/lessons/*/materials",
+                                "/api/posts",
+                                "/api/posts/*",
+                                "/api/contests",
+                                "/api/contests/*"
+                        ).permitAll()
+
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/registrations",
+                                "/api/registrations/*",
+                                "/api/contests/*/teams"
+                        ).hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/api/contests/*/teams").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/registrations").permitAll()
 
