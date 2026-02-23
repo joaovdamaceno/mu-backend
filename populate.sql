@@ -35,12 +35,12 @@ VALUES
     (2, 'Pilhas e Filas', 'https://www.youtube.com/watch?v=video004', 2, 'pilhas-e-filas', 'Entenda estruturas LIFO e FIFO e casos de uso.');
 
 -- Exercícios
-INSERT INTO exercises (module_id, lesson_id, title, oj_name, oj_url, difficulty)
+INSERT INTO exercises (module_id, title, oj_name, oj_url, difficulty)
 VALUES
-    (1, 1, 'Soma de Dois Números', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1003', 'EASY'),
-    (1, 2, 'Maior de Três Valores', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1013', 'EASY'),
-    (2, 3, 'Sequência de Fibonacci', 'LeetCode', 'https://leetcode.com/problems/fibonacci-number/', 'MEDIUM'),
-    (2, 4, 'Valid Parentheses', 'LeetCode', 'https://leetcode.com/problems/valid-parentheses/', 'MEDIUM');
+    (1, 'Soma de Dois Números', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1003', 'EASY'),
+    (1, 'Maior de Três Valores', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1013', 'EASY'),
+    (2, 'Sequência de Fibonacci', 'LeetCode', 'https://leetcode.com/problems/fibonacci-number/', 'MEDIUM'),
+    (2, 'Valid Parentheses', 'LeetCode', 'https://leetcode.com/problems/valid-parentheses/', 'MEDIUM');
 
 -- Tags dos exercícios
 INSERT INTO exercise_tags (exercise_id, tag)
@@ -53,12 +53,12 @@ VALUES
     (4, 'pilha');
 
 -- Materiais extras
-INSERT INTO extra_materials (lesson_id, type, url)
+INSERT INTO extra_materials (module_id, type, url)
 VALUES
     (1, 'PDF', 'https://example.com/materiais/variaveis.pdf'),
-    (2, 'Artigo', 'https://example.com/materiais/condicionais.html'),
-    (3, 'Slides', 'https://example.com/materiais/listas.pptx'),
-    (4, 'Vídeo complementar', 'https://example.com/materiais/pilhas-filas.mp4');
+    (1, 'Artigo', 'https://example.com/materiais/condicionais.html'),
+    (2, 'Slides', 'https://example.com/materiais/listas.pptx'),
+    (2, 'Vídeo complementar', 'https://example.com/materiais/pilhas-filas.mp4');
 
 -- Posts do blog
 INSERT INTO posts (title, tag, slug, summary, cover_image_url, author_name, status, main_text)

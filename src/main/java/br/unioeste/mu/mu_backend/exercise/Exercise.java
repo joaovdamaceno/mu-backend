@@ -1,6 +1,5 @@
 package br.unioeste.mu.mu_backend.exercise;
 
-import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -43,11 +42,6 @@ public class Exercise {
     @NotNull(message = "Module is required")
     @JsonIgnore
     private Module module;
-
-    @ManyToOne
-    @JoinColumn(name = "lesson_id")
-    @NotNull(message = "Lesson is required")
-    private Lesson lesson;
 
     public Exercise() {
     }
@@ -102,13 +96,5 @@ public class Exercise {
 
     public void setModule(Module module) {
         this.module = module;
-    }
-
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
     }
 }

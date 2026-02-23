@@ -1,6 +1,6 @@
 package br.unioeste.mu.mu_backend.material;
 
-import br.unioeste.mu.mu_backend.lesson.Lesson;
+import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -21,10 +21,10 @@ public class ExtraMaterial {
     private String url;
 
     @ManyToOne
-    @JoinColumn(name = "lesson_id")
-    @NotNull(message = "Lesson is required")
+    @JoinColumn(name = "module_id")
+    @NotNull(message = "Module is required")
     @JsonIgnore
-    private Lesson lesson;
+    private Module module;
 
     public ExtraMaterial() {
     }
@@ -49,11 +49,11 @@ public class ExtraMaterial {
         this.url = url;
     }
 
-    public Lesson getLesson() {
-        return lesson;
+    public Module getModule() {
+        return module;
     }
 
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
+    public void setModule(Module module) {
+        this.module = module;
     }
 }

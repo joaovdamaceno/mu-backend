@@ -5,13 +5,13 @@ public class ExtraMaterialAggregateResponse {
     private final Long id;
     private final String type;
     private final String url;
-    private final Long lessonId;
+    private final Long moduleId;
 
-    public ExtraMaterialAggregateResponse(Long id, String type, String url, Long lessonId) {
+    public ExtraMaterialAggregateResponse(Long id, String type, String url, Long moduleId) {
         this.id = id;
         this.type = type;
         this.url = url;
-        this.lessonId = lessonId;
+        this.moduleId = moduleId;
     }
 
     public Long getId() {
@@ -26,7 +26,7 @@ public class ExtraMaterialAggregateResponse {
         return url;
     }
 
-    public Long getLessonId() {
-        return lessonId;
+    public Long getModuleId() {
+        return moduleId;
     }
 }

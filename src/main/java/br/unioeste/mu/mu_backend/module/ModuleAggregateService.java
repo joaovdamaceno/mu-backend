@@ -15,7 +15,6 @@ import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,37 +49,37 @@ public class ModuleAggregateService {
         module.setPublished(request.isPublished());
 
         Module persistedModule = moduleRepository.save(module);
-        List<LessonAggregateResponse> lessonResponses = new ArrayList<>();
 
-        for (LessonAggregateRequest lessonRequest : request.getLessons()) {
-            Lesson lesson = new Lesson();
-            lesson.setTitle(lessonRequest.getTitle());
-            lesson.setSlug(lessonRequest.getSlug());
-            lesson.setSummary(lessonRequest.getSummary());
-            lesson.setVideoUrl(lessonRequest.getVideoUrl());
-            lesson.setOrderIndex(lessonRequest.getOrderIndex());
-            lesson.setModule(persistedModule);
+        List<LessonAggregateResponse> lessonResponses = request.getLessons().stream()
+                .map(lessonRequest -> {
+                    Lesson lesson = new Lesson();
+                    lesson.setTitle(lessonRequest.getTitle());
+                    lesson.setSlug(lessonRequest.getSlug());
+                    lesson.setSummary(lessonRequest.getSummary());
+                    lesson.setVideoUrl(lessonRequest.getVideoUrl());
+                    lesson.setOrderIndex(lessonRequest.getOrderIndex());
+                    lesson.setModule(persistedModule);
+                    return lessonRepository.save(lesson);
+                })
+                .map(ModuleAggregateResponse::lessonFrom)
+                .toList();
 
-            Lesson persistedLesson = lessonRepository.save(lesson);
+        List<Exercise> persistedExercises = request.getExercises().stream()
+                .map(exerciseRequest -> exerciseRequest.toExercise(persistedModule))
+                .map(exerciseRepository::save)
+                .toList();
 
-            List<Exercise> persistedExercises = lessonRequest.getExercises().stream()
-                    .map(exerciseRequest -> exerciseRequest.toExercise(persistedModule, persistedLesson))
-                    .map(exerciseRepository::save)
-                    .toList();
+        List<ExtraMaterial> persistedExtraMaterials = request.getExtraMaterials().stream()
+                .map(extraMaterialRequest -> extraMaterialRequest.toExtraMaterial(persistedModule))
+                .map(extraMaterialRepository::save)
+                .toList();
 
-            List<ExtraMaterial> persistedExtraMaterials = lessonRequest.getExtraMaterials().stream()
-                    .map(extraMaterialRequest -> extraMaterialRequest.toExtraMaterial(persistedLesson))
-                    .map(extraMaterialRepository::save)
-                    .toList();
-
-            lessonResponses.add(ModuleAggregateResponse.lessonFrom(
-                    persistedLesson,
-                    persistedExercises,
-                    persistedExtraMaterials
-            ));
-        }
-
-        return new ModuleAggregateResponse(persistedModule, lessonResponses);
+        return new ModuleAggregateResponse(
+                persistedModule,
+                lessonResponses,
+                persistedExercises.stream().map(ModuleAggregateResponse::exerciseFrom).toList(),
+                persistedExtraMaterials.stream().map(ModuleAggregateResponse::extraMaterialFrom).toList()
+        );
     }
 
     private void validateAggregatePayload(ModuleAggregateRequest request) {
