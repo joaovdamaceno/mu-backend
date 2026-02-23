@@ -7,16 +7,22 @@ import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import br.unioeste.mu.mu_backend.material.ExtraMaterial;
 import br.unioeste.mu.mu_backend.material.ExtraMaterialRepository;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
+import br.unioeste.mu.mu_backend.module.aggregate.ExerciseAggregateResponse;
+import br.unioeste.mu.mu_backend.module.aggregate.ExtraMaterialAggregateResponse;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateResponse;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -37,6 +43,43 @@ public class ModuleAggregateService {
         this.lessonRepository = lessonRepository;
         this.exerciseRepository = exerciseRepository;
         this.extraMaterialRepository = extraMaterialRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ModuleAggregateResponse> listAllFullModules() {
+        List<Module> modules = moduleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        if (modules.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> moduleIds = modules.stream().map(Module::getId).toList();
+
+        Map<Long, List<LessonAggregateResponse>> lessonsByModule = new HashMap<>();
+        lessonRepository.findByModuleIdInOrderByModuleIdAscOrderIndexAsc(moduleIds)
+                .forEach(lesson -> lessonsByModule
+                        .computeIfAbsent(lesson.getModule().getId(), ignored -> new ArrayList<>())
+                        .add(ModuleAggregateResponse.lessonFrom(lesson)));
+
+        Map<Long, List<ExerciseAggregateResponse>> exercisesByModule = new HashMap<>();
+        exerciseRepository.findByModuleIdInOrderByModuleIdAscIdAsc(moduleIds)
+                .forEach(exercise -> exercisesByModule
+                        .computeIfAbsent(exercise.getModule().getId(), ignored -> new ArrayList<>())
+                        .add(ModuleAggregateResponse.exerciseFrom(exercise)));
+
+        Map<Long, List<ExtraMaterialAggregateResponse>> extraMaterialsByModule = new HashMap<>();
+        extraMaterialRepository.findByModuleIdInOrderByModuleIdAscIdAsc(moduleIds)
+                .forEach(extraMaterial -> extraMaterialsByModule
+                        .computeIfAbsent(extraMaterial.getModule().getId(), ignored -> new ArrayList<>())
+                        .add(ModuleAggregateResponse.extraMaterialFrom(extraMaterial)));
+
+        return modules.stream()
+                .map(module -> new ModuleAggregateResponse(
+                        module,
+                        lessonsByModule.getOrDefault(module.getId(), List.of()),
+                        exercisesByModule.getOrDefault(module.getId(), List.of()),
+                        extraMaterialsByModule.getOrDefault(module.getId(), List.of())
+                ))
+                .toList();
     }
 
     @Transactional

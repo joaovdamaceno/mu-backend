@@ -8,4 +8,6 @@ import java.util.List;
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     List<Exercise> findByModule(Module module);
+
+    List<Exercise> findByModuleIdInOrderByModuleIdAscIdAsc(List<Long> moduleIds);
 }

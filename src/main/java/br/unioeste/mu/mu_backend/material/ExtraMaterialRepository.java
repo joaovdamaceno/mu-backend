@@ -8,4 +8,6 @@ import java.util.List;
 public interface ExtraMaterialRepository extends JpaRepository<ExtraMaterial, Long> {
 
     List<ExtraMaterial> findByModule(Module module);
+
+    List<ExtraMaterial> findByModuleIdInOrderByModuleIdAscIdAsc(List<Long> moduleIds);
 }

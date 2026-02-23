@@ -1,11 +1,13 @@
 package br.unioeste.mu.mu_backend.module;
 
+import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
+import br.unioeste.mu.mu_backend.shared.error.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import br.unioeste.mu.mu_backend.shared.error.GlobalExceptionHandler;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-
-import org.springframework.context.annotation.Import;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -105,6 +105,24 @@ class ModuleControllerPaginationTest {
                 .andExpect(jsonPath("$.size").value(10));
 
         verify(moduleRepository).findAll(PageRequest.of(1, 10, Sort.by(Sort.Direction.ASC, "id")));
+    }
+
+    @Test
+    void shouldListFullModulesWithNestedContent() throws Exception {
+        Module module = new Module();
+        module.setTitle("Módulo completo");
+        module.setNotes("Notas gerais");
+        module.setPublished(true);
+
+        ModuleAggregateResponse response = new ModuleAggregateResponse(module, List.of(), List.of(), List.of());
+        when(moduleAggregateService.listAllFullModules()).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/api/modules/full"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].module.title").value("Módulo completo"))
+                .andExpect(jsonPath("$[0].lessons").isArray())
+                .andExpect(jsonPath("$[0].exercises").isArray())
+                .andExpect(jsonPath("$[0].extraMaterials").isArray());
     }
 
     @Test

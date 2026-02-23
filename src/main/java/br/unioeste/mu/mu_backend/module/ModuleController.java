@@ -36,6 +36,13 @@ public class ModuleController {
                 .map(ModuleResponse::from);
     }
 
+
+    @GetMapping("/full")
+    @Operation(summary = "List all modules with lessons, exercises, and extra materials")
+    public java.util.List<ModuleAggregateResponse> listFull() {
+        return moduleAggregateService.listAllFullModules();
+    }
+
     @GetMapping("/{id}")
     public ModuleResponse get(@PathVariable Long id) {
         return repository.findById(id)
