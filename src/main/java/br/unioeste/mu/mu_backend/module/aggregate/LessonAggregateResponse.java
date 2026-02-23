@@ -1,7 +1,5 @@
 package br.unioeste.mu.mu_backend.module.aggregate;
 
-import java.util.List;
-
 public class LessonAggregateResponse {
 
     private final Long id;
@@ -10,8 +8,6 @@ public class LessonAggregateResponse {
     private final String summary;
     private final String videoUrl;
     private final Integer orderIndex;
-    private final List<ExerciseAggregateResponse> exercises;
-    private final List<ExtraMaterialAggregateResponse> extraMaterials;
 
     public LessonAggregateResponse(
             Long id,
@@ -19,9 +15,7 @@ public class LessonAggregateResponse {
             String slug,
             String summary,
             String videoUrl,
-            Integer orderIndex,
-            List<ExerciseAggregateResponse> exercises,
-            List<ExtraMaterialAggregateResponse> extraMaterials
+            Integer orderIndex
     ) {
         this.id = id;
         this.title = title;
@@ -29,8 +23,6 @@ public class LessonAggregateResponse {
         this.summary = summary;
         this.videoUrl = videoUrl;
         this.orderIndex = orderIndex;
-        this.exercises = exercises;
-        this.extraMaterials = extraMaterials;
     }
 
     public Long getId() {
@@ -55,13 +47,5 @@ public class LessonAggregateResponse {
 
     public Integer getOrderIndex() {
         return orderIndex;
-    }
-
-    public List<ExerciseAggregateResponse> getExercises() {
-        return exercises;
-    }
-
-    public List<ExtraMaterialAggregateResponse> getExtraMaterials() {
-        return extraMaterials;
     }
 }

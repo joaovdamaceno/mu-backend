@@ -2,7 +2,6 @@ package br.unioeste.mu.mu_backend.module.aggregate;
 
 import br.unioeste.mu.mu_backend.exercise.Exercise;
 import br.unioeste.mu.mu_backend.exercise.ExerciseDifficulty;
-import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.module.Module;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +28,7 @@ public class ExerciseAggregateRequest {
     public ExerciseAggregateRequest() {
     }
 
-    public Exercise toExercise(Module module, Lesson lesson) {
+    public Exercise toExercise(Module module) {
         Exercise exercise = new Exercise();
         exercise.setTitle(this.title);
         exercise.setOjName(this.ojName);
@@ -37,7 +36,6 @@ public class ExerciseAggregateRequest {
         exercise.setDifficulty(this.difficulty);
         exercise.setTags(this.tags);
         exercise.setModule(module);
-        exercise.setLesson(lesson);
         return exercise;
     }
 
