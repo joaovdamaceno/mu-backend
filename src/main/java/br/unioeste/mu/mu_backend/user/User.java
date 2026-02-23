@@ -1,6 +1,8 @@
 package br.unioeste.mu.mu_backend.user;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +20,8 @@ public class User {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "user_role")
     private UserRole role = UserRole.USER;
 
     @Column(name = "created_at", nullable = false)
