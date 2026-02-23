@@ -225,7 +225,6 @@ class PostControllerValidationTest {
     void shouldReturnSuccessMessageWhenDeletingPost() throws Exception {
         long postId = 5L;
         Post post = new Post();
-        post.setId(postId);
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
         mockMvc.perform(delete("/api/posts/{id}", postId))
