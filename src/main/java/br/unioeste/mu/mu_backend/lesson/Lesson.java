@@ -1,14 +1,11 @@
 package br.unioeste.mu.mu_backend.lesson;
 
-import br.unioeste.mu.mu_backend.material.ExtraMaterial;
 import br.unioeste.mu.mu_backend.module.Module;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "lessons")
@@ -41,8 +38,6 @@ public class Lesson {
     @JsonIgnore
     private Module module;
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExtraMaterial> extraMaterials = new ArrayList<>();
 
     public Lesson() {
     }
@@ -99,7 +94,4 @@ public class Lesson {
         this.module = module;
     }
 
-    public List<ExtraMaterial> getExtraMaterials() {
-        return extraMaterials;
-    }
 }
