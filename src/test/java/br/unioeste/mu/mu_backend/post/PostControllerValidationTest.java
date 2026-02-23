@@ -220,6 +220,21 @@ class PostControllerValidationTest {
                 .andExpect(jsonPath("$.sections[1].position").value(3));
     }
 
+
+    @Test
+    void shouldReturnSuccessMessageWhenDeletingPost() throws Exception {
+        long postId = 5L;
+        Post post = new Post();
+        post.setId(postId);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+
+        mockMvc.perform(delete("/api/posts/{id}", postId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Post removido com sucesso."));
+
+        verify(postRepository).delete(post);
+    }
+
     @Test
     void shouldReturnNotFoundContractWhenPostDoesNotExistOnDelete() throws Exception {
         long postId = 77L;

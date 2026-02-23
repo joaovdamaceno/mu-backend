@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.module;
 
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -73,10 +74,10 @@ public class ModuleController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Module module = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));
         repository.delete(module);
+        return DeleteResponse.of("Módulo removido com sucesso.");
     }
 }

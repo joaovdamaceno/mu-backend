@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.post;
 
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -76,11 +77,11 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));
 
         postRepository.delete(post);
+        return DeleteResponse.of("Post removido com sucesso.");
     }
 }

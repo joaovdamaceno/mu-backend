@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -51,6 +52,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 ErrorCode.RESOURCE_NOT_FOUND,
                 ex.getMessage(),
+                request.getRequestURI(),
+                List.of()
+        );
+    }
+
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ApiError> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex, HttpServletRequest request) {
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                ErrorCode.RESOURCE_NOT_FOUND,
+                "Recurso não encontrado.",
                 request.getRequestURI(),
                 List.of()
         );

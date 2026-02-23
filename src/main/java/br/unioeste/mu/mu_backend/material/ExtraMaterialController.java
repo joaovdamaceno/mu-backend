@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.material;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
@@ -56,9 +57,8 @@ public class ExtraMaterialController {
     }
 
     @DeleteMapping("/{materialId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long moduleId,
-                       @PathVariable Long materialId) {
+    public DeleteResponse delete(@PathVariable Long moduleId,
+                                 @PathVariable Long materialId) {
         findModule(moduleId);
 
         ExtraMaterial material = extraMaterialRepository.findById(materialId)
@@ -69,6 +69,7 @@ public class ExtraMaterialController {
         }
 
         extraMaterialRepository.delete(material);
+        return DeleteResponse.of("Material extra removido com sucesso.");
     }
 
     private Module findModule(Long moduleId) {

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -125,6 +126,18 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().details()).isEmpty();
     }
 
+
+    @Test
+    void shouldReturnNotFoundWhenDeleteTargetDoesNotExist() {
+        EmptyResultDataAccessException exception = new EmptyResultDataAccessException(1);
+
+        ResponseEntity<ApiError> response = handler.handleEmptyResultDataAccessException(exception, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo("RESOURCE_NOT_FOUND");
+        assertThat(response.getBody().message()).isEqualTo("Recurso não encontrado.");
+    }
 
     @Test
     void shouldReturnUnauthorizedForBadCredentialsException() {
