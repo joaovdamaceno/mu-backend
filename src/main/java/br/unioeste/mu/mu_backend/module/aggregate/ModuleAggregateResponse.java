@@ -11,8 +11,15 @@ public class ModuleAggregateResponse {
 
     private final CreatedModuleResponse module;
     private final List<LessonAggregateResponse> lessons;
+    private final List<ExerciseAggregateResponse> exercises;
+    private final List<ExtraMaterialAggregateResponse> extraMaterials;
 
-    public ModuleAggregateResponse(Module module, List<LessonAggregateResponse> lessons) {
+    public ModuleAggregateResponse(
+            Module module,
+            List<LessonAggregateResponse> lessons,
+            List<ExerciseAggregateResponse> exercises,
+            List<ExtraMaterialAggregateResponse> extraMaterials
+    ) {
         this.module = new CreatedModuleResponse(
                 module.getId(),
                 module.getTitle(),
@@ -20,36 +27,39 @@ public class ModuleAggregateResponse {
                 module.isPublished()
         );
         this.lessons = lessons;
+        this.exercises = exercises;
+        this.extraMaterials = extraMaterials;
     }
 
-    public static LessonAggregateResponse lessonFrom(
-            Lesson lesson,
-            List<Exercise> exercises,
-            List<ExtraMaterial> extraMaterials
-    ) {
+    public static LessonAggregateResponse lessonFrom(Lesson lesson) {
         return new LessonAggregateResponse(
                 lesson.getId(),
                 lesson.getTitle(),
                 lesson.getSlug(),
                 lesson.getSummary(),
                 lesson.getVideoUrl(),
-                lesson.getOrderIndex(),
-                exercises.stream().map(exercise -> new ExerciseAggregateResponse(
-                        exercise.getId(),
-                        exercise.getTitle(),
-                        exercise.getOjName(),
-                        exercise.getOjUrl(),
-                        exercise.getDifficulty(),
-                        exercise.getTags(),
-                        exercise.getModule() != null ? exercise.getModule().getId() : null,
-                        exercise.getLesson() != null ? exercise.getLesson().getId() : null
-                )).toList(),
-                extraMaterials.stream().map(extraMaterial -> new ExtraMaterialAggregateResponse(
-                        extraMaterial.getId(),
-                        extraMaterial.getType(),
-                        extraMaterial.getUrl(),
-                        extraMaterial.getLesson() != null ? extraMaterial.getLesson().getId() : null
-                )).toList()
+                lesson.getOrderIndex()
+        );
+    }
+
+    public static ExerciseAggregateResponse exerciseFrom(Exercise exercise) {
+        return new ExerciseAggregateResponse(
+                exercise.getId(),
+                exercise.getTitle(),
+                exercise.getOjName(),
+                exercise.getOjUrl(),
+                exercise.getDifficulty(),
+                exercise.getTags(),
+                exercise.getModule() != null ? exercise.getModule().getId() : null
+        );
+    }
+
+    public static ExtraMaterialAggregateResponse extraMaterialFrom(ExtraMaterial extraMaterial) {
+        return new ExtraMaterialAggregateResponse(
+                extraMaterial.getId(),
+                extraMaterial.getType(),
+                extraMaterial.getUrl(),
+                extraMaterial.getModule() != null ? extraMaterial.getModule().getId() : null
         );
     }
 
@@ -59,6 +69,14 @@ public class ModuleAggregateResponse {
 
     public List<LessonAggregateResponse> getLessons() {
         return lessons;
+    }
+
+    public List<ExerciseAggregateResponse> getExercises() {
+        return exercises;
+    }
+
+    public List<ExtraMaterialAggregateResponse> getExtraMaterials() {
+        return extraMaterials;
     }
 
     public static class CreatedModuleResponse {

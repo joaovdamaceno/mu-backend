@@ -13,7 +13,6 @@ public class ExerciseAggregateResponse {
     private final ExerciseDifficulty difficulty;
     private final List<String> tags;
     private final Long moduleId;
-    private final Long lessonId;
 
     public ExerciseAggregateResponse(
             Long id,
@@ -22,8 +21,7 @@ public class ExerciseAggregateResponse {
             String ojUrl,
             ExerciseDifficulty difficulty,
             List<String> tags,
-            Long moduleId,
-            Long lessonId
+            Long moduleId
     ) {
         this.id = id;
         this.title = title;
@@ -32,7 +30,6 @@ public class ExerciseAggregateResponse {
         this.difficulty = difficulty;
         this.tags = tags;
         this.moduleId = moduleId;
-        this.lessonId = lessonId;
     }
 
     public Long getId() {
@@ -61,9 +58,5 @@ public class ExerciseAggregateResponse {
 
     public Long getModuleId() {
         return moduleId;
-    }
-
-    public Long getLessonId() {
-        return lessonId;
     }
 }

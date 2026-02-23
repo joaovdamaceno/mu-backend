@@ -117,11 +117,9 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
     @Test
     void shouldTrimFieldsAndTagsConsistentlyForExerciseCreateAndUpdate() throws Exception {
         Module module = module(11L);
-        Lesson lesson = lesson(21L, module);
-        Exercise existing = exercise(31L, module, lesson);
+        Exercise existing = exercise(31L, module);
 
         when(moduleRepository.findById(11L)).thenReturn(Optional.of(module));
-        when(lessonRepository.findById(21L)).thenReturn(Optional.of(lesson));
         when(exerciseRepository.findById(31L)).thenReturn(Optional.of(existing));
         when(exerciseRepository.save(any(Exercise.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -135,7 +133,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/modules/{moduleId}/lessons/{lessonId}/exercises", 11, 21)
+        mockMvc.perform(post("/api/modules/{moduleId}/exercises", 11)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isCreated())
@@ -155,7 +153,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/modules/{moduleId}/lessons/{lessonId}/exercises/{exerciseId}", 11, 21, 31)
+        mockMvc.perform(put("/api/modules/{moduleId}/exercises/{exerciseId}", 11, 31)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePayload))
                 .andExpect(status().isOk())
@@ -176,10 +174,9 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
     @Test
     void shouldTrimFieldsConsistentlyForExtraMaterialCreateAndUpdate() throws Exception {
         Module module = module(12L);
-        Lesson lesson = lesson(22L, module);
-        ExtraMaterial existing = material(32L, lesson);
+        ExtraMaterial existing = material(32L, module);
 
-        when(lessonRepository.findById(22L)).thenReturn(Optional.of(lesson));
+        when(moduleRepository.findById(12L)).thenReturn(Optional.of(module));
         when(extraMaterialRepository.findById(32L)).thenReturn(Optional.of(existing));
         when(extraMaterialRepository.save(any(ExtraMaterial.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -190,7 +187,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/lessons/{lessonId}/materials", 22)
+        mockMvc.perform(post("/api/modules/{moduleId}/materials", 12)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isCreated())
@@ -204,7 +201,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/lessons/{lessonId}/materials/{materialId}", 22, 32)
+        mockMvc.perform(put("/api/modules/{moduleId}/materials/{materialId}", 12, 32)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePayload))
                 .andExpect(status().isOk())
@@ -238,7 +235,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         return lesson;
     }
 
-    private Exercise exercise(Long id, Module module, Lesson lesson) {
+    private Exercise exercise(Long id, Module module) {
         Exercise exercise = new Exercise();
         ReflectionTestUtils.setField(exercise, "id", id);
         exercise.setTitle("Exercício");
@@ -247,16 +244,15 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         exercise.setDifficulty(ExerciseDifficulty.EASY);
         exercise.setTags(List.of("tag"));
         exercise.setModule(module);
-        exercise.setLesson(lesson);
         return exercise;
     }
 
-    private ExtraMaterial material(Long id, Lesson lesson) {
+    private ExtraMaterial material(Long id, Module module) {
         ExtraMaterial material = new ExtraMaterial();
         ReflectionTestUtils.setField(material, "id", id);
         material.setType("tipo");
         material.setUrl("https://example.com/resource");
-        material.setLesson(lesson);
+        material.setModule(module);
         return material;
     }
 }
