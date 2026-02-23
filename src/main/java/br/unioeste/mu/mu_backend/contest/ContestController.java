@@ -59,6 +59,14 @@ public class ContestController {
         return ContestResponse.from(contestRepository.save(contest));
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        Contest contest = contestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Contest não encontrado para id=" + id));
+        contestRepository.delete(contest);
+    }
+
     @GetMapping("/{contestId}/teams")
     public List<ContestTeamResponse> listTeams(@PathVariable Long contestId) {
         return contestTeamService.listTeams(contestId);

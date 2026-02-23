@@ -55,6 +55,22 @@ public class ExtraMaterialController {
         return extraMaterialRepository.save(material);
     }
 
+    @DeleteMapping("/{materialId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long moduleId,
+                       @PathVariable Long materialId) {
+        findModule(moduleId);
+
+        ExtraMaterial material = extraMaterialRepository.findById(materialId)
+                .orElseThrow(() -> new NotFoundException("Material extra não encontrado para id=" + materialId));
+
+        if (material.getModule() == null || !material.getModule().getId().equals(moduleId)) {
+            throw new BusinessValidationException("Material extra id=" + materialId + " não pertence ao módulo id=" + moduleId);
+        }
+
+        extraMaterialRepository.delete(material);
+    }
+
     private Module findModule(Long moduleId) {
         return moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));

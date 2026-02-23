@@ -24,8 +24,7 @@ public class LessonController {
 
     @GetMapping
     public List<LessonResponse> list(@PathVariable Long moduleId) {
-        Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
+        Module module = findModule(moduleId);
         return lessonRepository.findByModuleOrderByOrderIndexAsc(module)
                 .stream()
                 .map(LessonResponse::from)
@@ -35,8 +34,7 @@ public class LessonController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LessonResponse create(@PathVariable Long moduleId, @Valid @RequestBody LessonRequest request) {
-        Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
+        Module module = findModule(moduleId);
         Lesson lesson = new Lesson();
         request.applyTo(lesson, module);
         return LessonResponse.from(lessonRepository.save(lesson));
@@ -46,8 +44,7 @@ public class LessonController {
     public LessonResponse update(@PathVariable Long moduleId,
                                  @PathVariable Long lessonId,
                                  @Valid @RequestBody LessonRequest request) {
-        Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
+        Module module = findModule(moduleId);
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lição não encontrada para id=" + lessonId));
 
@@ -59,4 +56,25 @@ public class LessonController {
 
         return LessonResponse.from(lessonRepository.save(lesson));
     }
+    @DeleteMapping("/{lessonId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long moduleId,
+                       @PathVariable Long lessonId) {
+        findModule(moduleId);
+
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new NotFoundException("Lição não encontrada para id=" + lessonId));
+
+        if (lesson.getModule() == null || !lesson.getModule().getId().equals(moduleId)) {
+            throw new BusinessValidationException("Lição id=" + lessonId + " não pertence ao módulo id=" + moduleId);
+        }
+
+        lessonRepository.delete(lesson);
+    }
+
+    private Module findModule(Long moduleId) {
+        return moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
+    }
+
 }
