@@ -11,7 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -21,17 +25,31 @@ public class PostController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final PostRepository postRepository;
+    private final PostSectionRepository postSectionRepository;
     private static final Function<Post, PostResponse> TO_RESPONSE = PostResponse::from;
 
-    public PostController(PostRepository postRepository) {
+    public PostController(PostRepository postRepository, PostSectionRepository postSectionRepository) {
         this.postRepository = postRepository;
+        this.postSectionRepository = postSectionRepository;
     }
 
     @GetMapping
     public Page<PostResponse> list(@RequestParam(defaultValue = "0") @Min(0) int page,
                                    @RequestParam(defaultValue = "20") @Min(1) @Max(MAX_PAGE_SIZE) int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt", "id"));
-        return postRepository.findAll(pageRequest).map(TO_RESPONSE);
+        Page<Post> postsPage = postRepository.findAll(pageRequest);
+        List<Post> posts = postsPage.getContent();
+
+        if (posts.isEmpty()) {
+            return postsPage.map(TO_RESPONSE);
+        }
+
+        List<Long> postIds = posts.stream().map(Post::getId).toList();
+        Map<Long, List<PostSection>> sectionsByPostId = postSectionRepository.findByPostIdInOrderByPostIdAscPositionAsc(postIds)
+                .stream()
+                .collect(Collectors.groupingBy(section -> section.getPost().getId()));
+
+        return postsPage.map(post -> PostResponse.from(post, sectionsByPostId.getOrDefault(post.getId(), Collections.emptyList())));
     }
 
     @GetMapping("/{id}")
