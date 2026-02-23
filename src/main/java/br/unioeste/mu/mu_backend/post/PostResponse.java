@@ -21,6 +21,10 @@ public class PostResponse {
     private final List<PostSectionResponse> sections;
 
     public PostResponse(Post post) {
+        this(post, post.getSections());
+    }
+
+    public PostResponse(Post post, List<PostSection> sections) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.tag = post.getTag();
@@ -32,7 +36,7 @@ public class PostResponse {
         this.mainText = post.getMainText();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
-        this.sections = post.getSections() == null ? Collections.emptyList() : post.getSections().stream()
+        this.sections = sections == null ? Collections.emptyList() : sections.stream()
                 .sorted(Comparator.comparingInt(PostSection::getPosition))
                 .map(PostSectionResponse::from)
                 .toList();
@@ -40,6 +44,10 @@ public class PostResponse {
 
     public static PostResponse from(Post post) {
         return new PostResponse(post);
+    }
+
+    public static PostResponse from(Post post, List<PostSection> sections) {
+        return new PostResponse(post, sections);
     }
 
     public Long getId() {

@@ -7,4 +7,6 @@ import java.util.List;
 public interface PostSectionRepository extends JpaRepository<PostSection, Long> {
 
     List<PostSection> findByPostOrderByPositionAsc(Post post);
+
+    List<PostSection> findByPostIdInOrderByPostIdAscPositionAsc(List<Long> postIds);
 }
