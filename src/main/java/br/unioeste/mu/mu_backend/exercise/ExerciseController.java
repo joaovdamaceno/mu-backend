@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.exercise;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
@@ -60,9 +61,8 @@ public class ExerciseController {
     }
 
     @DeleteMapping("/{exerciseId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long moduleId,
-                       @PathVariable Long exerciseId) {
+    public DeleteResponse delete(@PathVariable Long moduleId,
+                                 @PathVariable Long exerciseId) {
         findModule(moduleId);
 
         Exercise exercise = exerciseRepository.findById(exerciseId)
@@ -73,6 +73,7 @@ public class ExerciseController {
         }
 
         exerciseRepository.delete(exercise);
+        return DeleteResponse.of("Exercício removido com sucesso.");
     }
 
     private Module findModule(Long moduleId) {

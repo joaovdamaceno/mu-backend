@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.lesson;
 
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
@@ -57,9 +58,8 @@ public class LessonController {
         return LessonResponse.from(lessonRepository.save(lesson));
     }
     @DeleteMapping("/{lessonId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long moduleId,
-                       @PathVariable Long lessonId) {
+    public DeleteResponse delete(@PathVariable Long moduleId,
+                                 @PathVariable Long lessonId) {
         findModule(moduleId);
 
         Lesson lesson = lessonRepository.findById(lessonId)
@@ -70,6 +70,7 @@ public class LessonController {
         }
 
         lessonRepository.delete(lesson);
+        return DeleteResponse.of("Lição removida com sucesso.");
     }
 
     private Module findModule(Long moduleId) {

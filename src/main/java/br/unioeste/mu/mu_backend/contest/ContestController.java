@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.contest;
 
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -60,11 +61,11 @@ public class ContestController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Contest contest = contestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Contest não encontrado para id=" + id));
         contestRepository.delete(contest);
+        return DeleteResponse.of("Contest removido com sucesso.");
     }
 
     @GetMapping("/{contestId}/teams")

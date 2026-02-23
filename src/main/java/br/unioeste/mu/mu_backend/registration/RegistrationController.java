@@ -1,5 +1,6 @@
 package br.unioeste.mu.mu_backend.registration;
 
+import br.unioeste.mu.mu_backend.shared.api.DeleteResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -54,11 +55,11 @@ public class RegistrationController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Registration registration = registrationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Inscrição não encontrada para id=" + id));
 
         registrationRepository.delete(registration);
+        return DeleteResponse.of("Inscrição removida com sucesso.");
     }
 }
