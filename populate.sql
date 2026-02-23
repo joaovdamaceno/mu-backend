@@ -1,7 +1,7 @@
 -- Script de população inicial do banco de dados
--- Compatível com migrations V1..V13
--- Assume que as tabelas de contests foram criadas em V12__create_contests_schema.sql
--- e que o índice de unicidade existe via V13__contest_team_unique_name_per_contest.sql
+-- Compatível com migrations V1..V16
+-- Considera o vínculo de materiais extras diretamente com módulos (V15)
+-- e team_name opcional para contest individual (V16)
 
 BEGIN;
 

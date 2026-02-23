@@ -126,13 +126,13 @@ class RequestUrlValidationAndNormalizationTest {
         extraMaterialRequest.setType("  slides  ");
         extraMaterialRequest.setUrl("  https://example.com/slides  ");
 
-        ExtraMaterial extraMaterial = extraMaterialRequest.toExtraMaterial(new Lesson());
+        ExtraMaterial extraMaterial = extraMaterialRequest.toExtraMaterial(new Module());
 
         assertThat(extraMaterial.getType()).isEqualTo("slides");
         assertThat(extraMaterial.getUrl()).isEqualTo("https://example.com/slides");
 
         ExtraMaterial extraMaterialForUpdate = new ExtraMaterial();
-        extraMaterialRequest.applyTo(extraMaterialForUpdate, new Lesson());
+        extraMaterialRequest.applyTo(extraMaterialForUpdate, new Module());
         assertThat(extraMaterialForUpdate.getType()).isEqualTo("slides");
         assertThat(extraMaterialForUpdate.getUrl()).isEqualTo("https://example.com/slides");
 
