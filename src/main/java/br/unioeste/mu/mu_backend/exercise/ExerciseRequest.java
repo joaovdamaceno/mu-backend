@@ -1,6 +1,5 @@
 package br.unioeste.mu.mu_backend.exercise;
 
-import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.module.Module;
 import br.unioeste.mu.mu_backend.shared.validation.HttpOrHttpsUrl;
 import jakarta.validation.constraints.NotBlank;
@@ -30,20 +29,19 @@ public class ExerciseRequest {
     public ExerciseRequest() {
     }
 
-    public Exercise toExercise(Module module, Lesson lesson) {
+    public Exercise toExercise(Module module) {
         Exercise exercise = new Exercise();
-        applyTo(exercise, module, lesson);
+        applyTo(exercise, module);
         return exercise;
     }
 
-    public void applyTo(Exercise exercise, Module module, Lesson lesson) {
+    public void applyTo(Exercise exercise, Module module) {
         exercise.setTitle(normalizeRequired(title));
         exercise.setOjName(normalizeRequired(ojName));
         exercise.setOjUrl(normalizeRequired(ojUrl));
         exercise.setDifficulty(this.difficulty);
         exercise.setTags(normalizeTags(tags));
         exercise.setModule(module);
-        exercise.setLesson(lesson);
     }
 
     private String normalizeRequired(String value) {

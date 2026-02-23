@@ -100,14 +100,12 @@ class ContestTeamServiceTest {
     void shouldAllowSingleCompetitorForIndividualContest() {
         Long contestId = 4L;
         ContestTeamRegistrationRequest request = new ContestTeamRegistrationRequest();
-        request.setTeamName("Solo");
         request.setCompetitor1Name("Competidor Solo");
 
         Contest contest = new Contest();
         contest.setTeamBased(false);
 
         when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
-        when(contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, "Solo")).thenReturn(false);
         when(contestTeamRepository.save(any(ContestTeam.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         contestTeamService.registerTeam(contestId, request);
@@ -116,6 +114,7 @@ class ContestTeamServiceTest {
         verify(contestTeamRepository).save(teamCaptor.capture());
 
         ContestTeam saved = teamCaptor.getValue();
+        assertThat(saved.getTeamName()).isNull();
         assertThat(saved.getCoachName()).isNull();
         assertThat(saved.getMembers()).hasSize(1);
         assertThat(saved.getMembers().get(0).getMemberIndex()).isEqualTo(1);
@@ -137,6 +136,27 @@ class ContestTeamServiceTest {
         assertThatThrownBy(() -> contestTeamService.registerTeam(contestId, request))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessage("Competidor 2 é obrigatório");
+
+        verify(contestTeamRepository, never()).save(any(ContestTeam.class));
+    }
+
+
+    @Test
+    void shouldRequireTeamNameForTeamBasedContest() {
+        Long contestId = 6L;
+        ContestTeamRegistrationRequest request = new ContestTeamRegistrationRequest();
+        request.setCompetitor1Name("Competidor 1");
+        request.setCompetitor2Name("Competidor 2");
+        request.setCompetitor3Name("Competidor 3");
+
+        Contest contest = new Contest();
+        contest.setTeamBased(true);
+
+        when(contestRepository.findById(contestId)).thenReturn(Optional.of(contest));
+
+        assertThatThrownBy(() -> contestTeamService.registerTeam(contestId, request))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Nome do time é obrigatório para contest em equipe");
 
         verify(contestTeamRepository, never()).save(any(ContestTeam.class));
     }

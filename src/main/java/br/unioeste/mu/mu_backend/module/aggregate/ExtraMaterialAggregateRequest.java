@@ -1,7 +1,7 @@
 package br.unioeste.mu.mu_backend.module.aggregate;
 
-import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.material.ExtraMaterial;
+import br.unioeste.mu.mu_backend.module.Module;
 import jakarta.validation.constraints.NotBlank;
 
 public class ExtraMaterialAggregateRequest {
@@ -15,11 +15,11 @@ public class ExtraMaterialAggregateRequest {
     public ExtraMaterialAggregateRequest() {
     }
 
-    public ExtraMaterial toExtraMaterial(Lesson lesson) {
+    public ExtraMaterial toExtraMaterial(Module module) {
         ExtraMaterial material = new ExtraMaterial();
         material.setType(type);
         material.setUrl(url);
-        material.setLesson(lesson);
+        material.setModule(module);
         return material;
     }
 

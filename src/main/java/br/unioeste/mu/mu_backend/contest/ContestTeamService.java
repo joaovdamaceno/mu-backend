@@ -27,8 +27,8 @@ public class ContestTeamService {
                 .orElseThrow(() -> new NotFoundException("Contest não encontrado para id=" + contestId));
         validateMembers(contest, request);
 
-        String normalizedTeamName = normalizeTeamName(request.getTeamName());
-        if (contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamName)) {
+        String normalizedTeamName = normalizeTeamName(contest, request);
+        if (normalizedTeamName != null && contestTeamRepository.existsByContestIdAndTeamNameIgnoreCase(contestId, normalizedTeamName)) {
             throw new ConflictException("Já existe um time com este nome neste contest");
         }
 
@@ -95,8 +95,14 @@ public class ContestTeamService {
         }
     }
 
-    private String normalizeTeamName(String teamName) {
-        return teamName.trim();
+    private String normalizeTeamName(Contest contest, ContestTeamRegistrationRequest request) {
+        String normalizedTeamName = trimToNull(request.getTeamName());
+
+        if (contest.isTeamBased() && normalizedTeamName == null) {
+            throw new BusinessValidationException("Nome do time é obrigatório para contest em equipe");
+        }
+
+        return normalizedTeamName;
     }
 
     private String trimToNull(String value) {

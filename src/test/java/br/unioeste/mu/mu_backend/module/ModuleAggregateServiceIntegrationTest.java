@@ -8,10 +8,10 @@ import br.unioeste.mu.mu_backend.module.aggregate.ExerciseAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
+import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -51,12 +51,12 @@ class ModuleAggregateServiceIntegrationTest {
                 buildLesson("Segunda lição", "avancado", 1)
         ));
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        ConflictException exception = assertThrows(
+                ConflictException.class,
                 () -> moduleAggregateService.createFullModule(request)
         );
 
-        assertEquals("orderIndex duplicado para lições do módulo: 1", exception.getReason());
+        assertEquals("orderIndex duplicado para lições do módulo: 1", exception.getMessage());
         assertEquals(modulesBefore, moduleRepository.count());
         assertEquals(lessonsBefore, lessonRepository.count());
         assertEquals(exercisesBefore, exerciseRepository.count());
@@ -69,8 +69,8 @@ class ModuleAggregateServiceIntegrationTest {
         request.setTitle("Módulo agregado");
         request.setNotes("Notas do módulo");
 
-        LessonAggregateRequest lesson = buildLesson("Lição única", "licao-unica", 1);
-        request.setLessons(List.of(lesson));
+        request.setLessons(List.of(buildLesson("Lição única", "licao-unica", 1)));
+        request.setExercises(List.of(buildExercise()));
 
         ModuleAggregateResponse response = moduleAggregateService.createFullModule(request);
 
@@ -78,7 +78,8 @@ class ModuleAggregateServiceIntegrationTest {
         assertEquals("Módulo agregado", response.getModule().getTitle());
         assertEquals(1, response.getLessons().size());
         assertNotNull(response.getLessons().get(0).getId());
-        assertNotNull(response.getLessons().get(0).getExercises().get(0).getId());
+        assertEquals(1, response.getExercises().size());
+        assertNotNull(response.getExercises().get(0).getId());
     }
 
     private LessonAggregateRequest buildLesson(String title, String slug, Integer orderIndex) {
@@ -88,14 +89,15 @@ class ModuleAggregateServiceIntegrationTest {
         lesson.setSummary("Resumo");
         lesson.setVideoUrl("https://example.com/video");
         lesson.setOrderIndex(orderIndex);
+        return lesson;
+    }
 
+    private ExerciseAggregateRequest buildExercise() {
         ExerciseAggregateRequest exercise = new ExerciseAggregateRequest();
         exercise.setTitle("Exercício 1");
         exercise.setOjName("Beecrowd");
         exercise.setOjUrl("https://judge.example.com/problems/1");
         exercise.setDifficulty(ExerciseDifficulty.EASY);
-
-        lesson.setExercises(List.of(exercise));
-        return lesson;
+        return exercise;
     }
 }

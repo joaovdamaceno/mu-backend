@@ -4,7 +4,6 @@ import br.unioeste.mu.mu_backend.auth.JwtAuthFilter;
 import br.unioeste.mu.mu_backend.auth.SecurityConfig;
 import br.unioeste.mu.mu_backend.exercise.ExerciseController;
 import br.unioeste.mu.mu_backend.exercise.ExerciseRepository;
-import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import br.unioeste.mu.mu_backend.module.ModuleRepository;
 import br.unioeste.mu.mu_backend.post.PostController;
 import br.unioeste.mu.mu_backend.post.PostRepository;
@@ -42,8 +41,6 @@ class ApiErrorContractWebMvcTest {
     @MockBean
     private ModuleRepository moduleRepository;
 
-    @MockBean
-    private LessonRepository lessonRepository;
 
     @MockBean
     private JwtAuthFilter jwtAuthFilter;
@@ -88,14 +85,14 @@ class ApiErrorContractWebMvcTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/modules/1/lessons/1/exercises")
+        mockMvc.perform(post("/api/modules/1/exercises")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("INVALID_JSON"))
                 .andExpect(jsonPath("$.message").value("Corpo da requisição inválido."))
-                .andExpect(jsonPath("$.path").value("/api/modules/1/lessons/1/exercises"))
+                .andExpect(jsonPath("$.path").value("/api/modules/1/exercises"))
                 .andExpect(jsonPath("$.details").isArray())
                 .andExpect(jsonPath("$.details[0].field").value("difficulty"))
                 .andExpect(jsonPath("$.details[0].message").value("Valor inválido para o campo 'difficulty'. Valores aceitos: [EASY, MEDIUM, HARD]."))

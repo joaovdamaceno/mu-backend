@@ -2,6 +2,7 @@ package br.unioeste.mu.mu_backend.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class LocalLoginAttemptLimiter implements LoginAttemptLimiter {
     private final Clock clock;
     private final ConcurrentMap<String, AttemptWindow> attempts = new ConcurrentHashMap<>();
 
+    @Autowired
     public LocalLoginAttemptLimiter(@Value("${app.auth.login.max-attempts:5}") int maxAttempts,
                                     @Value("${app.auth.login.window-seconds:300}") long windowSeconds) {
         this(maxAttempts, windowSeconds, Clock.systemUTC());

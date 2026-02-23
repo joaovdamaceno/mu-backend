@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public class ContestTeamRegistrationRequest {
 
-    @NotBlank(message = "Nome do time é obrigatório")
     @Size(max = 120, message = "Nome do time deve ter no máximo 120 caracteres")
     private String teamName;
 

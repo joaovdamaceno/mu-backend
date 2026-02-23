@@ -18,6 +18,12 @@ public class ModuleAggregateRequest {
     @Valid
     private List<LessonAggregateRequest> lessons = new ArrayList<>();
 
+    @Valid
+    private List<ExerciseAggregateRequest> exercises = new ArrayList<>();
+
+    @Valid
+    private List<ExtraMaterialAggregateRequest> extraMaterials = new ArrayList<>();
+
     public ModuleAggregateRequest() {
     }
 
@@ -51,5 +57,21 @@ public class ModuleAggregateRequest {
 
     public void setLessons(List<LessonAggregateRequest> lessons) {
         this.lessons = lessons != null ? lessons : new ArrayList<>();
+    }
+
+    public List<ExerciseAggregateRequest> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<ExerciseAggregateRequest> exercises) {
+        this.exercises = exercises != null ? exercises : new ArrayList<>();
+    }
+
+    public List<ExtraMaterialAggregateRequest> getExtraMaterials() {
+        return extraMaterials;
+    }
+
+    public void setExtraMaterials(List<ExtraMaterialAggregateRequest> extraMaterials) {
+        this.extraMaterials = extraMaterials != null ? extraMaterials : new ArrayList<>();
     }
 }
