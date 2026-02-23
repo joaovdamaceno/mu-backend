@@ -56,21 +56,42 @@ public class ModuleAggregateService {
 
         Map<Long, List<LessonAggregateResponse>> lessonsByModule = new HashMap<>();
         lessonRepository.findByModuleIdInOrderByModuleIdAscOrderIndexAsc(moduleIds)
-                .forEach(lesson -> lessonsByModule
-                        .computeIfAbsent(lesson.getModule().getId(), ignored -> new ArrayList<>())
-                        .add(ModuleAggregateResponse.lessonFrom(lesson)));
+                .forEach(lesson -> {
+                    Long moduleId = moduleIdFrom(lesson.getModule());
+                    if (moduleId == null) {
+                        return;
+                    }
+
+                    lessonsByModule
+                            .computeIfAbsent(moduleId, ignored -> new ArrayList<>())
+                            .add(ModuleAggregateResponse.lessonFrom(lesson));
+                });
 
         Map<Long, List<ExerciseAggregateResponse>> exercisesByModule = new HashMap<>();
         exerciseRepository.findByModuleIdInOrderByModuleIdAscIdAsc(moduleIds)
-                .forEach(exercise -> exercisesByModule
-                        .computeIfAbsent(exercise.getModule().getId(), ignored -> new ArrayList<>())
-                        .add(ModuleAggregateResponse.exerciseFrom(exercise)));
+                .forEach(exercise -> {
+                    Long moduleId = moduleIdFrom(exercise.getModule());
+                    if (moduleId == null) {
+                        return;
+                    }
+
+                    exercisesByModule
+                            .computeIfAbsent(moduleId, ignored -> new ArrayList<>())
+                            .add(ModuleAggregateResponse.exerciseFrom(exercise));
+                });
 
         Map<Long, List<ExtraMaterialAggregateResponse>> extraMaterialsByModule = new HashMap<>();
         extraMaterialRepository.findByModuleIdInOrderByModuleIdAscIdAsc(moduleIds)
-                .forEach(extraMaterial -> extraMaterialsByModule
-                        .computeIfAbsent(extraMaterial.getModule().getId(), ignored -> new ArrayList<>())
-                        .add(ModuleAggregateResponse.extraMaterialFrom(extraMaterial)));
+                .forEach(extraMaterial -> {
+                    Long moduleId = moduleIdFrom(extraMaterial.getModule());
+                    if (moduleId == null) {
+                        return;
+                    }
+
+                    extraMaterialsByModule
+                            .computeIfAbsent(moduleId, ignored -> new ArrayList<>())
+                            .add(ModuleAggregateResponse.extraMaterialFrom(extraMaterial));
+                });
 
         return modules.stream()
                 .map(module -> new ModuleAggregateResponse(
@@ -171,5 +192,9 @@ public class ModuleAggregateService {
 
     private ConflictException duplicatedResource(String message) {
         return new ConflictException(message);
+    }
+
+    private Long moduleIdFrom(Module module) {
+        return module != null ? module.getId() : null;
     }
 }
