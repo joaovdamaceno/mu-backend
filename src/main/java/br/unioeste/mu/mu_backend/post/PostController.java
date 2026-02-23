@@ -58,6 +58,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post não encontrado para id=" + id));

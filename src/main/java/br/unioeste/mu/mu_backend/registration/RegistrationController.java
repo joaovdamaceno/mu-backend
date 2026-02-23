@@ -54,6 +54,7 @@ public class RegistrationController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         Registration registration = registrationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Inscrição não encontrada para id=" + id));

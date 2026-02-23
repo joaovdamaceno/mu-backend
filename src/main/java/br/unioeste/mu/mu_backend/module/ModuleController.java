@@ -66,6 +66,7 @@ public class ModuleController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         Module module = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + id));

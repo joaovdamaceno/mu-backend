@@ -59,6 +59,22 @@ public class ExerciseController {
         return ExerciseResponse.from(exerciseRepository.save(exercise));
     }
 
+    @DeleteMapping("/{exerciseId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long moduleId,
+                       @PathVariable Long exerciseId) {
+        findModule(moduleId);
+
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new NotFoundException("Exercício não encontrado para id=" + exerciseId));
+
+        if (exercise.getModule() == null || !exercise.getModule().getId().equals(moduleId)) {
+            throw new BusinessValidationException("Exercício id=" + exerciseId + " não pertence ao módulo id=" + moduleId);
+        }
+
+        exerciseRepository.delete(exercise);
+    }
+
     private Module findModule(Long moduleId) {
         return moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
