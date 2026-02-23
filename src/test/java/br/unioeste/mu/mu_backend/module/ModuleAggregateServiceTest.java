@@ -67,8 +67,8 @@ class ModuleAggregateServiceTest {
         List<ModuleAggregateResponse> response = moduleAggregateService.listAllFullModules();
 
         assertThat(response).hasSize(1);
-        assertThat(response.getFirst().getLessons()).isEmpty();
-        assertThat(response.getFirst().getExercises()).isEmpty();
-        assertThat(response.getFirst().getExtraMaterials()).isEmpty();
+        assertThat(response.get(0).getLessons()).isEmpty();
+        assertThat(response.get(0).getExercises()).isEmpty();
+        assertThat(response.get(0).getExtraMaterials()).isEmpty();
     }
 }
