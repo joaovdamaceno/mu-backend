@@ -135,3 +135,31 @@ need manual environment-variable entries for local development.
    ```bash
    docker compose down
    ```
+
+### Troubleshooting BuildKit snapshot errors during image export
+
+If `docker compose up --build -d` fails at the **exporting to image** step with an error like:
+
+`failed to prepare extraction snapshot ... parent snapshot ... does not exist`
+
+the issue is usually a corrupted Docker BuildKit cache/snapshot state on the local machine (not an application build failure).
+
+Recommended recovery steps:
+
+1. Retry with a clean builder cache:
+   ```bash
+   docker builder prune -af
+   docker compose build --no-cache
+   docker compose up -d
+   ```
+2. If it still fails, clean dangling images/layers and retry:
+   ```bash
+   docker system prune -af
+   docker compose up --build -d
+   ```
+3. On Docker Desktop, restart Docker Engine/Desktop to recreate internal snapshot metadata.
+
+Notes:
+
+- `mvnw package` completing inside the Docker build means the Java project compiled successfully.
+- The failure happens after build completion, while Docker is assembling/extracting image layers.
