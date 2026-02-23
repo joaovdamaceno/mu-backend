@@ -5,6 +5,7 @@ import br.unioeste.mu.mu_backend.lesson.Lesson;
 import br.unioeste.mu.mu_backend.material.ExtraMaterial;
 import br.unioeste.mu.mu_backend.module.Module;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleAggregateResponse {
@@ -43,13 +44,17 @@ public class ModuleAggregateResponse {
     }
 
     public static ExerciseAggregateResponse exerciseFrom(Exercise exercise) {
+        List<String> tags = exercise.getTags() != null
+                ? new ArrayList<>(exercise.getTags())
+                : List.of();
+
         return new ExerciseAggregateResponse(
                 exercise.getId(),
                 exercise.getTitle(),
                 exercise.getOjName(),
                 exercise.getOjUrl(),
                 exercise.getDifficulty(),
-                exercise.getTags(),
+                tags,
                 exercise.getModule() != null ? exercise.getModule().getId() : null
         );
     }
