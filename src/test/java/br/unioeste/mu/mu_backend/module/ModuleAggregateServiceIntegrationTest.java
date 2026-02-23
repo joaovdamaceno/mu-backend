@@ -82,6 +82,36 @@ class ModuleAggregateServiceIntegrationTest {
         assertNotNull(response.getExercises().get(0).getId());
     }
 
+
+    @Test
+    void shouldListAllFullModulesWithNestedData() {
+        long modulesBefore = moduleRepository.count();
+
+        ModuleAggregateRequest firstRequest = new ModuleAggregateRequest();
+        firstRequest.setTitle("Módulo A");
+        firstRequest.setLessons(List.of(buildLesson("Lição A1", "licao-a1", 1)));
+        firstRequest.setExercises(List.of(buildExercise()));
+        moduleAggregateService.createFullModule(firstRequest);
+
+        ModuleAggregateRequest secondRequest = new ModuleAggregateRequest();
+        secondRequest.setTitle("Módulo B");
+        secondRequest.setLessons(List.of(buildLesson("Lição B1", "licao-b1", 1)));
+        moduleAggregateService.createFullModule(secondRequest);
+
+        List<ModuleAggregateResponse> modules = moduleAggregateService.listAllFullModules();
+
+        assertEquals(modulesBefore + 2, modules.size());
+
+        ModuleAggregateResponse firstCreated = modules.get((int) modulesBefore);
+        ModuleAggregateResponse secondCreated = modules.get((int) modulesBefore + 1);
+
+        assertEquals("Módulo A", firstCreated.getModule().getTitle());
+        assertEquals(1, firstCreated.getLessons().size());
+        assertEquals(1, firstCreated.getExercises().size());
+        assertEquals("Módulo B", secondCreated.getModule().getTitle());
+        assertEquals(1, secondCreated.getLessons().size());
+    }
+
     private LessonAggregateRequest buildLesson(String title, String slug, Integer orderIndex) {
         LessonAggregateRequest lesson = new LessonAggregateRequest();
         lesson.setTitle(title);
