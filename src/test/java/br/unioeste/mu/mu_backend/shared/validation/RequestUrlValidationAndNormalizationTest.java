@@ -110,7 +110,7 @@ class RequestUrlValidationAndNormalizationTest {
         exerciseRequest.setOjUrl("  https://codeforces.com/problemset/problem/1/A  ");
         exerciseRequest.setTags(List.of("  ad-hoc  ", "   ", " math "));
 
-        Exercise exercise = exerciseRequest.toExercise(new Module(), new Lesson());
+        Exercise exercise = exerciseRequest.toExercise(new Module());
 
         assertThat(exercise.getTitle()).isEqualTo("Soma");
         assertThat(exercise.getOjName()).isEqualTo("Codeforces");
@@ -118,7 +118,7 @@ class RequestUrlValidationAndNormalizationTest {
         assertThat(exercise.getTags()).containsExactly("ad-hoc", "math");
 
         Exercise exerciseForUpdate = new Exercise();
-        exerciseRequest.applyTo(exerciseForUpdate, new Module(), new Lesson());
+        exerciseRequest.applyTo(exerciseForUpdate, new Module());
         assertThat(exerciseForUpdate.getTitle()).isEqualTo("Soma");
         assertThat(exerciseForUpdate.getTags()).containsExactly("ad-hoc", "math");
 
