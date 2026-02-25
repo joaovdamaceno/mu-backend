@@ -115,8 +115,6 @@ class ModuleAggregateServiceIntegrationTest {
     private LessonAggregateRequest buildLesson(String title, String slug, Integer orderIndex) {
         LessonAggregateRequest lesson = new LessonAggregateRequest();
         lesson.setTitle(title);
-        lesson.setSlug(slug);
-        lesson.setSummary("Resumo");
         lesson.setVideoUrl("https://example.com/video");
         lesson.setOrderIndex(orderIndex);
         return lesson;
@@ -125,7 +123,6 @@ class ModuleAggregateServiceIntegrationTest {
     private ExerciseAggregateRequest buildExercise() {
         ExerciseAggregateRequest exercise = new ExerciseAggregateRequest();
         exercise.setTitle("Exercício 1");
-        exercise.setOjName("Beecrowd");
         exercise.setOjUrl("https://judge.example.com/problems/1");
         exercise.setDifficulty(ExerciseDifficulty.EASY);
         return exercise;

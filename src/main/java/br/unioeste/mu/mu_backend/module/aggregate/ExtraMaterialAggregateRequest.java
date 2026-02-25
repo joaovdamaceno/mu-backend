@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ExtraMaterialAggregateRequest {
 
-    @NotBlank(message = "Tipo é obrigatório")
-    private String type;
+    @NotBlank(message = "Título é obrigatório")
+    private String title;
 
     @NotBlank(message = "URL é obrigatória")
     private String url;
@@ -17,18 +17,18 @@ public class ExtraMaterialAggregateRequest {
 
     public ExtraMaterial toExtraMaterial(Module module) {
         ExtraMaterial material = new ExtraMaterial();
-        material.setType(type);
+        material.setTitle(title);
         material.setUrl(url);
         material.setModule(module);
         return material;
     }
 
-    public String getType() {
-        return type;
+    public String getTitle() {
+        return title;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUrl() {

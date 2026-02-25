@@ -14,9 +14,6 @@ public class ExerciseRequest {
     @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Nome do juiz online é obrigatório")
-    private String ojName;
-
     @NotBlank(message = "URL do juiz online é obrigatória")
     @HttpOrHttpsUrl(message = "URL do juiz online deve ser válida e usar http:// ou https://")
     private String ojUrl;
@@ -37,7 +34,6 @@ public class ExerciseRequest {
 
     public void applyTo(Exercise exercise, Module module) {
         exercise.setTitle(normalizeRequired(title));
-        exercise.setOjName(normalizeRequired(ojName));
         exercise.setOjUrl(normalizeRequired(ojUrl));
         exercise.setDifficulty(this.difficulty);
         exercise.setTags(normalizeTags(tags));
@@ -68,13 +64,6 @@ public class ExerciseRequest {
         this.title = title;
     }
 
-    public String getOjName() {
-        return ojName;
-    }
-
-    public void setOjName(String ojName) {
-        this.ojName = ojName;
-    }
 
     public String getOjUrl() {
         return ojUrl;

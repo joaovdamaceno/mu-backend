@@ -18,13 +18,6 @@ public class Lesson {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Slug is required")
-    private String slug;
-
-    @Column(columnDefinition = "TEXT")
-    @NotBlank(message = "Summary is required")
-    private String summary;
-
     @Column(name = "video_url")
     @NotBlank(message = "Video URL is required")
     private String videoUrl;
@@ -52,22 +45,6 @@ public class Lesson {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 
     public String getVideoUrl() {

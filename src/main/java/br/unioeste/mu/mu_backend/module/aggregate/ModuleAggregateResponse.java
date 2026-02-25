@@ -36,8 +36,6 @@ public class ModuleAggregateResponse {
         return new LessonAggregateResponse(
                 lesson.getId(),
                 lesson.getTitle(),
-                lesson.getSlug(),
-                lesson.getSummary(),
                 lesson.getVideoUrl(),
                 lesson.getOrderIndex()
         );
@@ -51,7 +49,6 @@ public class ModuleAggregateResponse {
         return new ExerciseAggregateResponse(
                 exercise.getId(),
                 exercise.getTitle(),
-                exercise.getOjName(),
                 exercise.getOjUrl(),
                 exercise.getDifficulty(),
                 tags,
@@ -62,7 +59,7 @@ public class ModuleAggregateResponse {
     public static ExtraMaterialAggregateResponse extraMaterialFrom(ExtraMaterial extraMaterial) {
         return new ExtraMaterialAggregateResponse(
                 extraMaterial.getId(),
-                extraMaterial.getType(),
+                extraMaterial.getTitle(),
                 extraMaterial.getUrl(),
                 extraMaterial.getModule() != null ? extraMaterial.getModule().getId() : null
         );

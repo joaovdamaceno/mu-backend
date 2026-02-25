@@ -8,7 +8,6 @@ public class ExerciseAggregateResponse {
 
     private final Long id;
     private final String title;
-    private final String ojName;
     private final String ojUrl;
     private final ExerciseDifficulty difficulty;
     private final List<String> tags;
@@ -17,7 +16,6 @@ public class ExerciseAggregateResponse {
     public ExerciseAggregateResponse(
             Long id,
             String title,
-            String ojName,
             String ojUrl,
             ExerciseDifficulty difficulty,
             List<String> tags,
@@ -25,7 +23,6 @@ public class ExerciseAggregateResponse {
     ) {
         this.id = id;
         this.title = title;
-        this.ojName = ojName;
         this.ojUrl = ojUrl;
         this.difficulty = difficulty;
         this.tags = tags;
@@ -40,9 +37,6 @@ public class ExerciseAggregateResponse {
         return title;
     }
 
-    public String getOjName() {
-        return ojName;
-    }
 
     public String getOjUrl() {
         return ojUrl;

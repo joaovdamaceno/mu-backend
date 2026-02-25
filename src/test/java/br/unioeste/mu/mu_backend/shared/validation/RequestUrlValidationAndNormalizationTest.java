@@ -88,32 +88,25 @@ class RequestUrlValidationAndNormalizationTest {
     void shouldTrimAndNormalizeFieldsBeforePersisting() {
         LessonRequest lessonRequest = buildValidLessonRequest();
         lessonRequest.setTitle("  Aula 01  ");
-        lessonRequest.setSlug("  aula-01  ");
-        lessonRequest.setSummary("  Resumo  ");
         lessonRequest.setVideoUrl("  https://example.com/video  ");
 
         Lesson lesson = lessonRequest.toLesson(new Module());
 
         assertThat(lesson.getTitle()).isEqualTo("Aula 01");
-        assertThat(lesson.getSlug()).isEqualTo("aula-01");
-        assertThat(lesson.getSummary()).isEqualTo("Resumo");
         assertThat(lesson.getVideoUrl()).isEqualTo("https://example.com/video");
 
         Lesson lessonForUpdate = new Lesson();
         lessonRequest.applyTo(lessonForUpdate, new Module());
         assertThat(lessonForUpdate.getTitle()).isEqualTo("Aula 01");
-        assertThat(lessonForUpdate.getSlug()).isEqualTo("aula-01");
 
         ExerciseRequest exerciseRequest = buildValidExerciseRequest();
         exerciseRequest.setTitle("  Soma  ");
-        exerciseRequest.setOjName("  Codeforces  ");
         exerciseRequest.setOjUrl("  https://codeforces.com/problemset/problem/1/A  ");
         exerciseRequest.setTags(List.of("  ad-hoc  ", "   ", " math "));
 
         Exercise exercise = exerciseRequest.toExercise(new Module());
 
         assertThat(exercise.getTitle()).isEqualTo("Soma");
-        assertThat(exercise.getOjName()).isEqualTo("Codeforces");
         assertThat(exercise.getOjUrl()).isEqualTo("https://codeforces.com/problemset/problem/1/A");
         assertThat(exercise.getTags()).containsExactly("ad-hoc", "math");
 
@@ -123,17 +116,17 @@ class RequestUrlValidationAndNormalizationTest {
         assertThat(exerciseForUpdate.getTags()).containsExactly("ad-hoc", "math");
 
         ExtraMaterialRequest extraMaterialRequest = buildValidExtraMaterialRequest();
-        extraMaterialRequest.setType("  slides  ");
+        extraMaterialRequest.setTitle("  slides  ");
         extraMaterialRequest.setUrl("  https://example.com/slides  ");
 
         ExtraMaterial extraMaterial = extraMaterialRequest.toExtraMaterial(new Module());
 
-        assertThat(extraMaterial.getType()).isEqualTo("slides");
+        assertThat(extraMaterial.getTitle()).isEqualTo("slides");
         assertThat(extraMaterial.getUrl()).isEqualTo("https://example.com/slides");
 
         ExtraMaterial extraMaterialForUpdate = new ExtraMaterial();
         extraMaterialRequest.applyTo(extraMaterialForUpdate, new Module());
-        assertThat(extraMaterialForUpdate.getType()).isEqualTo("slides");
+        assertThat(extraMaterialForUpdate.getTitle()).isEqualTo("slides");
         assertThat(extraMaterialForUpdate.getUrl()).isEqualTo("https://example.com/slides");
 
         ContestRequest contestRequest = buildValidContestRequest();
@@ -165,8 +158,6 @@ class RequestUrlValidationAndNormalizationTest {
     private LessonRequest buildValidLessonRequest() {
         LessonRequest request = new LessonRequest();
         request.setTitle("Aula");
-        request.setSlug("aula");
-        request.setSummary("Resumo");
         request.setVideoUrl("https://example.com/video");
         request.setOrderIndex(1);
         return request;
@@ -175,7 +166,6 @@ class RequestUrlValidationAndNormalizationTest {
     private ExerciseRequest buildValidExerciseRequest() {
         ExerciseRequest request = new ExerciseRequest();
         request.setTitle("Exercício");
-        request.setOjName("Codeforces");
         request.setOjUrl("https://codeforces.com/problemset/problem/1/A");
         request.setDifficulty(ExerciseDifficulty.EASY);
         request.setTags(List.of("math"));
@@ -184,7 +174,7 @@ class RequestUrlValidationAndNormalizationTest {
 
     private ExtraMaterialRequest buildValidExtraMaterialRequest() {
         ExtraMaterialRequest request = new ExtraMaterialRequest();
-        request.setType("video");
+        request.setTitle("video");
         request.setUrl("https://example.com/material");
         return request;
     }

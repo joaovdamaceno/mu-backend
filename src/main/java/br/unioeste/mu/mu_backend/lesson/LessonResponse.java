@@ -4,8 +4,6 @@ public class LessonResponse {
 
     private final Long id;
     private final String title;
-    private final String slug;
-    private final String summary;
     private final String videoUrl;
     private final Integer orderIndex;
     private final Long moduleId;
@@ -13,8 +11,6 @@ public class LessonResponse {
     public LessonResponse(Lesson lesson) {
         this.id = lesson.getId();
         this.title = lesson.getTitle();
-        this.slug = lesson.getSlug();
-        this.summary = lesson.getSummary();
         this.videoUrl = lesson.getVideoUrl();
         this.orderIndex = lesson.getOrderIndex();
         this.moduleId = lesson.getModule() != null ? lesson.getModule().getId() : null;
@@ -32,13 +28,6 @@ public class LessonResponse {
         return title;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
 
     public String getVideoUrl() {
         return videoUrl;
