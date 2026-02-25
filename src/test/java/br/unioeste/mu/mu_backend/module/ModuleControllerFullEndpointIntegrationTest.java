@@ -95,6 +95,58 @@ class ModuleControllerFullEndpointIntegrationTest {
                 .andExpect(jsonPath("$.extraMaterials[0].title").value("Material novo"));
     }
 
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldUpdateModuleThroughFullEndpointUsingQueryParamId() throws Exception {
+        ModuleAggregateRequest request = new ModuleAggregateRequest();
+        request.setTitle("Módulo original");
+        request.setNotes("Notas originais");
+        request.setLessons(List.of(buildLesson()));
+        request.setExercises(List.of(buildExerciseWithTags()));
+
+        ModuleAggregateResponse created = moduleAggregateService.createFullModule(request);
+
+        String payload = """
+                {
+                  "title": "Módulo atualizado por query param",
+                  "notes": "Notas atualizadas por query param",
+                  "published": true,
+                  "lessons": [
+                    {
+                      "title": "Lição por query param",
+                      "videoUrl": "https://example.com/query-video",
+                      "orderIndex": 1
+                    }
+                  ],
+                  "exercises": [
+                    {
+                      "title": "Exercício por query param",
+                      "ojUrl": "https://judge.example.com/problems/12",
+                      "difficulty": "MEDIUM",
+                      "tags": ["dp"]
+                    }
+                  ],
+                  "extraMaterials": [
+                    {
+                      "title": "Material por query param",
+                      "url": "https://example.com/query-material"
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(put("/api/modules/full")
+                        .param("id", created.getModule().getId().toString())
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.module.title").value("Módulo atualizado por query param"))
+                .andExpect(jsonPath("$.module.published").value(true))
+                .andExpect(jsonPath("$.lessons[0].title").value("Lição por query param"))
+                .andExpect(jsonPath("$.exercises[0].tags[0]").value("dp"))
+                .andExpect(jsonPath("$.extraMaterials[0].title").value("Material por query param"));
+    }
+
     private LessonAggregateRequest buildLesson() {
         LessonAggregateRequest lesson = new LessonAggregateRequest();
         lesson.setTitle("Lição");
