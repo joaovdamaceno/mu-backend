@@ -71,6 +71,13 @@ public class ModuleController {
         return moduleAggregateService.updateFullModule(id, request);
     }
 
+    @PutMapping("/full")
+    @Operation(summary = "Update module with lessons, exercises, and extra materials in a single request (query param id)")
+    public ModuleAggregateResponse updateFullByQueryParam(@RequestParam Long id,
+                                                           @Valid @RequestBody ModuleAggregateRequest request) {
+        return moduleAggregateService.updateFullModule(id, request);
+    }
+
     @PutMapping("/{id}")
     public ModuleResponse update(@PathVariable Long id, @Valid @RequestBody ModuleRequest request) {
         Module existing = repository.findById(id)
