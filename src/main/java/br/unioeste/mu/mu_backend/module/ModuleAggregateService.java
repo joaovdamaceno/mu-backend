@@ -14,6 +14,7 @@ import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.BusinessValidationException;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,6 +142,61 @@ public class ModuleAggregateService {
                 lessonResponses,
                 persistedExercises.stream().map(ModuleAggregateResponse::exerciseFrom).toList(),
                 persistedExtraMaterials.stream().map(ModuleAggregateResponse::extraMaterialFrom).toList()
+        );
+    }
+
+    @Transactional
+    public ModuleAggregateResponse updateFullModule(Long moduleId, ModuleAggregateRequest request) {
+        validateAggregatePayload(request);
+
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new NotFoundException("Módulo não encontrado para id=" + moduleId));
+
+        module.setTitle(request.getTitle());
+        module.setNotes(request.getNotes());
+        module.setPublished(request.isPublished());
+
+        module.getLessons().clear();
+        module.getExercises().clear();
+        module.getExtraMaterials().clear();
+
+        request.getLessons().forEach(lessonRequest -> {
+            Lesson lesson = new Lesson();
+            lesson.setTitle(lessonRequest.getTitle());
+            lesson.setVideoUrl(lessonRequest.getVideoUrl());
+            lesson.setOrderIndex(lessonRequest.getOrderIndex());
+            lesson.setModule(module);
+            module.getLessons().add(lesson);
+        });
+
+        request.getExercises().stream()
+                .map(exerciseRequest -> exerciseRequest.toExercise(module))
+                .forEach(module.getExercises()::add);
+
+        request.getExtraMaterials().stream()
+                .map(extraMaterialRequest -> extraMaterialRequest.toExtraMaterial(module))
+                .forEach(module.getExtraMaterials()::add);
+
+        Module updatedModule = moduleRepository.save(module);
+
+        List<LessonAggregateResponse> lessonResponses = updatedModule.getLessons().stream()
+                .sorted(java.util.Comparator.comparing(Lesson::getOrderIndex))
+                .map(ModuleAggregateResponse::lessonFrom)
+                .toList();
+
+        List<ExerciseAggregateResponse> exerciseResponses = updatedModule.getExercises().stream()
+                .map(ModuleAggregateResponse::exerciseFrom)
+                .toList();
+
+        List<ExtraMaterialAggregateResponse> extraMaterialResponses = updatedModule.getExtraMaterials().stream()
+                .map(ModuleAggregateResponse::extraMaterialFrom)
+                .toList();
+
+        return new ModuleAggregateResponse(
+                updatedModule,
+                lessonResponses,
+                exerciseResponses,
+                extraMaterialResponses
         );
     }
 
