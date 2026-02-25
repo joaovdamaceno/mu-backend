@@ -1,7 +1,7 @@
 -- Script de população inicial do banco de dados
--- Compatível com migrations V1..V16
+-- Compatível com migrations V1..V17
 -- Considera o vínculo de materiais extras diretamente com módulos (V15)
--- e team_name opcional para contest individual (V16)
+-- e team_name opcional para contest individual (V16), além da simplificação de campos de módulos (V17)
 
 BEGIN;
 
