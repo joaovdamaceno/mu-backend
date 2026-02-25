@@ -10,12 +10,6 @@ public class LessonRequest {
     @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Slug é obrigatório")
-    private String slug;
-
-    @NotBlank(message = "Resumo é obrigatório")
-    private String summary;
-
     @NotBlank(message = "URL do vídeo é obrigatória")
     @HttpOrHttpsUrl(message = "URL do vídeo deve ser válida e usar http:// ou https://")
     private String videoUrl;
@@ -34,8 +28,6 @@ public class LessonRequest {
 
     public void applyTo(Lesson lesson, Module module) {
         lesson.setTitle(normalizeRequired(title));
-        lesson.setSlug(normalizeRequired(slug));
-        lesson.setSummary(normalizeRequired(summary));
         lesson.setVideoUrl(normalizeRequired(videoUrl));
         lesson.setOrderIndex(this.orderIndex);
         lesson.setModule(module);
@@ -51,22 +43,6 @@ public class LessonRequest {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 
     public String getVideoUrl() {

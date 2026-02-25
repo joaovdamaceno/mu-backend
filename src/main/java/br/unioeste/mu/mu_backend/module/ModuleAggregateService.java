@@ -118,8 +118,6 @@ public class ModuleAggregateService {
                 .map(lessonRequest -> {
                     Lesson lesson = new Lesson();
                     lesson.setTitle(lessonRequest.getTitle());
-                    lesson.setSlug(lessonRequest.getSlug());
-                    lesson.setSummary(lessonRequest.getSummary());
                     lesson.setVideoUrl(lessonRequest.getVideoUrl());
                     lesson.setOrderIndex(lessonRequest.getOrderIndex());
                     lesson.setModule(persistedModule);
@@ -152,7 +150,6 @@ public class ModuleAggregateService {
         }
 
         Set<Integer> usedOrderIndexes = new HashSet<>();
-        Set<String> usedSlugs = new HashSet<>();
 
         for (int lessonIndex = 0; lessonIndex < request.getLessons().size(); lessonIndex++) {
             LessonAggregateRequest lesson = request.getLessons().get(lessonIndex);
@@ -162,7 +159,6 @@ public class ModuleAggregateService {
                 throw invalidPayload("Lição na posição " + lessonPosition + " está ausente");
             }
 
-            validateRequiredText(lesson.getSlug(), "slug", lessonPosition);
 
             Integer orderIndex = lesson.getOrderIndex();
             if (orderIndex == null) {
@@ -173,18 +169,9 @@ public class ModuleAggregateService {
                 throw duplicatedResource("orderIndex duplicado para lições do módulo: " + orderIndex);
             }
 
-            String normalizedSlug = lesson.getSlug().trim().toLowerCase();
-            if (!usedSlugs.add(normalizedSlug)) {
-                throw duplicatedResource("slug duplicado para lições do módulo: " + lesson.getSlug().trim());
-            }
         }
     }
 
-    private void validateRequiredText(String value, String fieldName, int lessonPosition) {
-        if (value == null || value.trim().isEmpty()) {
-            throw invalidPayload("Lição na posição " + lessonPosition + " possui " + fieldName + " inválido");
-        }
-    }
 
     private BusinessValidationException invalidPayload(String message) {
         return new BusinessValidationException(message);

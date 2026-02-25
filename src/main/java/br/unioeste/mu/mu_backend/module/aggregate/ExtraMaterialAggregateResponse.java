@@ -3,13 +3,13 @@ package br.unioeste.mu.mu_backend.module.aggregate;
 public class ExtraMaterialAggregateResponse {
 
     private final Long id;
-    private final String type;
+    private final String title;
     private final String url;
     private final Long moduleId;
 
-    public ExtraMaterialAggregateResponse(Long id, String type, String url, Long moduleId) {
+    public ExtraMaterialAggregateResponse(Long id, String title, String url, Long moduleId) {
         this.id = id;
-        this.type = type;
+        this.title = title;
         this.url = url;
         this.moduleId = moduleId;
     }
@@ -18,8 +18,8 @@ public class ExtraMaterialAggregateResponse {
         return id;
     }
 
-    public String getType() {
-        return type;
+    public String getTitle() {
+        return title;
     }
 
     public String getUrl() {

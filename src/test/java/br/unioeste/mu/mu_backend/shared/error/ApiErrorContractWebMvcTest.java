@@ -78,7 +78,6 @@ class ApiErrorContractWebMvcTest {
         String payload = """
                 {
                   "title": "Two Sum",
-                  "ojName": "LeetCode",
                   "ojUrl": "https://leetcode.com/problems/two-sum",
                   "difficulty": "VERY_HARD",
                   "tags": ["array"]

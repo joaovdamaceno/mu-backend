@@ -14,8 +14,8 @@ public class ExtraMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Type is required")
-    private String type;
+    @NotBlank(message = "Title is required")
+    private String title;
 
     @NotBlank(message = "URL is required")
     private String url;
@@ -33,12 +33,12 @@ public class ExtraMaterial {
         return id;
     }
 
-    public String getType() {
-        return type;
+    public String getTitle() {
+        return title;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUrl() {

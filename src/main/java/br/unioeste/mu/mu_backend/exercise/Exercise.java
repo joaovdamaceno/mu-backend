@@ -20,10 +20,6 @@ public class Exercise {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Online judge name is required")
-    @Column(name = "oj_name")
-    private String ojName;
-
     @NotBlank(message = "Online judge URL is required")
     @Column(name = "oj_url")
     private String ojUrl;
@@ -58,13 +54,6 @@ public class Exercise {
         this.title = title;
     }
 
-    public String getOjName() {
-        return ojName;
-    }
-
-    public void setOjName(String ojName) {
-        this.ojName = ojName;
-    }
 
     public String getOjUrl() {
         return ojUrl;

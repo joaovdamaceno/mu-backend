@@ -27,20 +27,20 @@ VALUES
     ('Estruturas de Dados', 'Introdução a listas, pilhas, filas e árvores.', TRUE);
 
 -- Aulas
-INSERT INTO lessons (module_id, title, video_url, position, slug, summary)
+INSERT INTO lessons (module_id, title, video_url, position)
 VALUES
-    (1, 'Variáveis e Tipos', 'https://www.youtube.com/watch?v=video001', 1, 'variaveis-e-tipos', 'Aprenda a declarar variáveis e entender tipos primitivos.'),
-    (1, 'Condicionais', 'https://www.youtube.com/watch?v=video002', 2, 'condicionais', 'Introdução ao uso de if, else e operadores lógicos.'),
-    (2, 'Listas e Vetores', 'https://www.youtube.com/watch?v=video003', 1, 'listas-e-vetores', 'Como armazenar coleções de dados e percorrê-las.'),
-    (2, 'Pilhas e Filas', 'https://www.youtube.com/watch?v=video004', 2, 'pilhas-e-filas', 'Entenda estruturas LIFO e FIFO e casos de uso.');
+    (1, 'Variáveis e Tipos', 'https://www.youtube.com/watch?v=video001', 1),
+    (1, 'Condicionais', 'https://www.youtube.com/watch?v=video002', 2),
+    (2, 'Listas e Vetores', 'https://www.youtube.com/watch?v=video003', 1),
+    (2, 'Pilhas e Filas', 'https://www.youtube.com/watch?v=video004', 2);
 
 -- Exercícios
-INSERT INTO exercises (module_id, title, oj_name, oj_url, difficulty)
+INSERT INTO exercises (module_id, title, oj_url, difficulty)
 VALUES
-    (1, 'Soma de Dois Números', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1003', 'EASY'),
-    (1, 'Maior de Três Valores', 'Beecrowd', 'https://www.beecrowd.com.br/judge/pt/problems/view/1013', 'EASY'),
-    (2, 'Sequência de Fibonacci', 'LeetCode', 'https://leetcode.com/problems/fibonacci-number/', 'MEDIUM'),
-    (2, 'Valid Parentheses', 'LeetCode', 'https://leetcode.com/problems/valid-parentheses/', 'MEDIUM');
+    (1, 'Soma de Dois Números', 'https://www.beecrowd.com.br/judge/pt/problems/view/1003', 'EASY'),
+    (1, 'Maior de Três Valores', 'https://www.beecrowd.com.br/judge/pt/problems/view/1013', 'EASY'),
+    (2, 'Sequência de Fibonacci', 'https://leetcode.com/problems/fibonacci-number/', 'MEDIUM'),
+    (2, 'Valid Parentheses', 'https://leetcode.com/problems/valid-parentheses/', 'MEDIUM');
 
 -- Tags dos exercícios
 INSERT INTO exercise_tags (exercise_id, tag)
@@ -53,7 +53,7 @@ VALUES
     (4, 'pilha');
 
 -- Materiais extras
-INSERT INTO extra_materials (module_id, type, url)
+INSERT INTO extra_materials (module_id, title, url)
 VALUES
     (1, 'PDF', 'https://example.com/materiais/variaveis.pdf'),
     (1, 'Artigo', 'https://example.com/materiais/condicionais.html'),

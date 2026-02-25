@@ -44,8 +44,6 @@ class ModuleAggregateServiceTest {
 
         Lesson lessonWithoutModule = new Lesson();
         lessonWithoutModule.setTitle("Lição sem módulo");
-        lessonWithoutModule.setSlug("l1");
-        lessonWithoutModule.setSummary("Resumo");
         lessonWithoutModule.setVideoUrl("https://example.com/video");
         lessonWithoutModule.setOrderIndex(1);
 
@@ -53,7 +51,7 @@ class ModuleAggregateServiceTest {
         exerciseWithoutModule.setTitle("Exercício sem módulo");
 
         ExtraMaterial materialWithoutModule = new ExtraMaterial();
-        materialWithoutModule.setType("Artigo");
+        materialWithoutModule.setTitle("Artigo");
         materialWithoutModule.setUrl("https://example.com/material");
 
         when(moduleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))).thenReturn(List.of(module));

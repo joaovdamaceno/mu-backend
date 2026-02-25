@@ -35,7 +35,6 @@ class ExerciseControllerIntegrationTest {
 
         Exercise exercise = new Exercise();
         exercise.setTitle("Duas Somatórias");
-        exercise.setOjName("Beecrowd");
         exercise.setOjUrl("https://judge.example.com/problems/1000");
         exercise.setDifficulty(ExerciseDifficulty.EASY);
         exercise.setTags(List.of("math", "implementation"));
