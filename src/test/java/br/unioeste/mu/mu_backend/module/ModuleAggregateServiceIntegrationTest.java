@@ -6,9 +6,11 @@ import br.unioeste.mu.mu_backend.lesson.LessonRepository;
 import br.unioeste.mu.mu_backend.material.ExtraMaterialRepository;
 import br.unioeste.mu.mu_backend.module.aggregate.ExerciseAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.LessonAggregateRequest;
+import br.unioeste.mu.mu_backend.module.aggregate.ExtraMaterialAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateRequest;
 import br.unioeste.mu.mu_backend.module.aggregate.ModuleAggregateResponse;
 import br.unioeste.mu.mu_backend.shared.error.domain.ConflictException;
+import br.unioeste.mu.mu_backend.shared.error.domain.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -83,6 +85,62 @@ class ModuleAggregateServiceIntegrationTest {
     }
 
 
+
+    @Test
+    void shouldReplaceNestedCollectionsWhenUpdatingFullModule() {
+        ModuleAggregateRequest createRequest = new ModuleAggregateRequest();
+        createRequest.setTitle("Módulo para atualização");
+        createRequest.setNotes("Notas antigas");
+        createRequest.setPublished(true);
+        createRequest.setLessons(List.of(
+                buildLesson("Lição antiga 1", "licao-antiga-1", 1),
+                buildLesson("Lição antiga 2", "licao-antiga-2", 2)
+        ));
+        createRequest.setExercises(List.of(buildExercise("Exercício antigo")));
+        createRequest.setExtraMaterials(List.of(buildMaterial("Material antigo", "https://example.com/old")));
+
+        ModuleAggregateResponse created = moduleAggregateService.createFullModule(createRequest);
+
+        ModuleAggregateRequest updateRequest = new ModuleAggregateRequest();
+        updateRequest.setTitle("Módulo atualizado");
+        updateRequest.setNotes("Notas novas");
+        updateRequest.setPublished(false);
+        updateRequest.setLessons(List.of(buildLesson("Lição nova", "licao-nova", 1)));
+        updateRequest.setExercises(List.of(buildExercise("Exercício novo")));
+        updateRequest.setExtraMaterials(List.of(buildMaterial("Material novo", "https://example.com/new")));
+
+        ModuleAggregateResponse updated = moduleAggregateService.updateFullModule(created.getModule().getId(), updateRequest);
+
+        Module persistedModule = moduleRepository.findById(created.getModule().getId()).orElseThrow();
+
+        assertEquals("Módulo atualizado", updated.getModule().getTitle());
+        assertEquals("Notas novas", updated.getModule().getNotes());
+        assertEquals(false, updated.getModule().isPublished());
+
+        assertEquals(1, lessonRepository.findByModuleOrderByOrderIndexAsc(persistedModule).size());
+        assertEquals("Lição nova", lessonRepository.findByModuleOrderByOrderIndexAsc(persistedModule).get(0).getTitle());
+
+        assertEquals(1, exerciseRepository.findByModule(persistedModule).size());
+        assertEquals("Exercício novo", exerciseRepository.findByModule(persistedModule).get(0).getTitle());
+
+        assertEquals(1, extraMaterialRepository.findByModule(persistedModule).size());
+        assertEquals("Material novo", extraMaterialRepository.findByModule(persistedModule).get(0).getTitle());
+    }
+
+    @Test
+    void shouldThrowNotFoundWhenUpdatingUnknownModule() {
+        ModuleAggregateRequest request = new ModuleAggregateRequest();
+        request.setTitle("Inexistente");
+        request.setLessons(List.of(buildLesson("Lição", "slug", 1)));
+
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> moduleAggregateService.updateFullModule(999_999L, request)
+        );
+
+        assertEquals("Módulo não encontrado para id=999999", exception.getMessage());
+    }
+
     @Test
     void shouldListAllFullModulesWithNestedData() {
         long modulesBefore = moduleRepository.count();
@@ -121,10 +179,21 @@ class ModuleAggregateServiceIntegrationTest {
     }
 
     private ExerciseAggregateRequest buildExercise() {
+        return buildExercise("Exercício 1");
+    }
+
+    private ExerciseAggregateRequest buildExercise(String title) {
         ExerciseAggregateRequest exercise = new ExerciseAggregateRequest();
-        exercise.setTitle("Exercício 1");
+        exercise.setTitle(title);
         exercise.setOjUrl("https://judge.example.com/problems/1");
         exercise.setDifficulty(ExerciseDifficulty.EASY);
         return exercise;
+    }
+
+    private ExtraMaterialAggregateRequest buildMaterial(String title, String url) {
+        ExtraMaterialAggregateRequest material = new ExtraMaterialAggregateRequest();
+        material.setTitle(title);
+        material.setUrl(url);
+        return material;
     }
 }
