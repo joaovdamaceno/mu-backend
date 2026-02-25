@@ -8,12 +8,6 @@ public class LessonAggregateRequest {
     @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Slug é obrigatório")
-    private String slug;
-
-    @NotBlank(message = "Resumo é obrigatório")
-    private String summary;
-
     @NotBlank(message = "URL do vídeo é obrigatória")
     private String videoUrl;
 
@@ -31,21 +25,6 @@ public class LessonAggregateRequest {
         this.title = title;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
 
     public String getVideoUrl() {
         return videoUrl;

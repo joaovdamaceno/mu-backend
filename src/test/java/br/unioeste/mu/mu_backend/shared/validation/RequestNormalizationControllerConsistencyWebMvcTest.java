@@ -69,8 +69,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         String payload = """
                 {
                   "title": "  Aula 01  ",
-                  "slug": "  aula-01  ",
-                  "summary": "  Resumo inicial  ",
                   "videoUrl": "  https://example.com/video  ",
                   "orderIndex": 1
                 }
@@ -81,15 +79,11 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Aula 01"))
-                .andExpect(jsonPath("$.slug").value("aula-01"))
-                .andExpect(jsonPath("$.summary").value("Resumo inicial"))
                 .andExpect(jsonPath("$.videoUrl").value("https://example.com/video"));
 
         String updatePayload = """
                 {
                   "title": "  Aula 02  ",
-                  "slug": "  aula-02  ",
-                  "summary": "  Resumo atualizado  ",
                   "videoUrl": "  https://example.com/video-2  ",
                   "orderIndex": 2
                 }
@@ -100,8 +94,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .content(updatePayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Aula 02"))
-                .andExpect(jsonPath("$.slug").value("aula-02"))
-                .andExpect(jsonPath("$.summary").value("Resumo atualizado"))
                 .andExpect(jsonPath("$.videoUrl").value("https://example.com/video-2"));
 
         ArgumentCaptor<Lesson> captor = ArgumentCaptor.forClass(Lesson.class);
@@ -109,9 +101,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
 
         List<Lesson> saved = captor.getAllValues();
         assertThat(saved.get(0).getTitle()).isEqualTo("Aula 01");
-        assertThat(saved.get(0).getSlug()).isEqualTo("aula-01");
         assertThat(saved.get(1).getTitle()).isEqualTo("Aula 02");
-        assertThat(saved.get(1).getSlug()).isEqualTo("aula-02");
     }
 
     @Test
@@ -126,7 +116,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         String payload = """
                 {
                   "title": "  Soma  ",
-                  "ojName": "  Codeforces  ",
                   "ojUrl": "  https://codeforces.com/problemset/problem/1/A  ",
                   "difficulty": "EASY",
                   "tags": ["  ad-hoc  ", "   ", " math "]
@@ -138,7 +127,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Soma"))
-                .andExpect(jsonPath("$.ojName").value("Codeforces"))
                 .andExpect(jsonPath("$.ojUrl").value("https://codeforces.com/problemset/problem/1/A"))
                 .andExpect(jsonPath("$.tags[0]").value("ad-hoc"))
                 .andExpect(jsonPath("$.tags[1]").value("math"));
@@ -146,7 +134,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         String updatePayload = """
                 {
                   "title": "  Soma 2  ",
-                  "ojName": "  Beecrowd  ",
                   "ojUrl": "  https://judge.beecrowd.com/pt/problems/view/1001  ",
                   "difficulty": "MEDIUM",
                   "tags": ["  implementação  ", "  strings  "]
@@ -158,7 +145,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .content(updatePayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Soma 2"))
-                .andExpect(jsonPath("$.ojName").value("Beecrowd"))
                 .andExpect(jsonPath("$.ojUrl").value("https://judge.beecrowd.com/pt/problems/view/1001"))
                 .andExpect(jsonPath("$.tags[0]").value("implementação"))
                 .andExpect(jsonPath("$.tags[1]").value("strings"));
@@ -182,7 +168,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
 
         String payload = """
                 {
-                  "type": "  slides  ",
+                  "title": "  slides  ",
                   "url": "  https://example.com/slides  "
                 }
                 """;
@@ -191,12 +177,12 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.type").value("slides"))
+                .andExpect(jsonPath("$.title").value("slides"))
                 .andExpect(jsonPath("$.url").value("https://example.com/slides"));
 
         String updatePayload = """
                 {
-                  "type": "  artigo  ",
+                  "title": "  artigo  ",
                   "url": "  https://example.com/article  "
                 }
                 """;
@@ -205,15 +191,15 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePayload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.type").value("artigo"))
+                .andExpect(jsonPath("$.title").value("artigo"))
                 .andExpect(jsonPath("$.url").value("https://example.com/article"));
 
         ArgumentCaptor<ExtraMaterial> captor = ArgumentCaptor.forClass(ExtraMaterial.class);
         verify(extraMaterialRepository, org.mockito.Mockito.times(2)).save(captor.capture());
 
         List<ExtraMaterial> saved = captor.getAllValues();
-        assertThat(saved.get(0).getType()).isEqualTo("slides");
-        assertThat(saved.get(1).getType()).isEqualTo("artigo");
+        assertThat(saved.get(0).getTitle()).isEqualTo("slides");
+        assertThat(saved.get(1).getTitle()).isEqualTo("artigo");
     }
 
     private Module module(Long id) {
@@ -227,8 +213,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         Lesson lesson = new Lesson();
         ReflectionTestUtils.setField(lesson, "id", id);
         lesson.setTitle("Aula");
-        lesson.setSlug("aula");
-        lesson.setSummary("Resumo");
         lesson.setVideoUrl("https://example.com/video");
         lesson.setOrderIndex(1);
         lesson.setModule(module);
@@ -239,7 +223,6 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
         Exercise exercise = new Exercise();
         ReflectionTestUtils.setField(exercise, "id", id);
         exercise.setTitle("Exercício");
-        exercise.setOjName("OJ");
         exercise.setOjUrl("https://example.com/problem");
         exercise.setDifficulty(ExerciseDifficulty.EASY);
         exercise.setTags(List.of("tag"));
@@ -250,7 +233,7 @@ class RequestNormalizationControllerConsistencyWebMvcTest {
     private ExtraMaterial material(Long id, Module module) {
         ExtraMaterial material = new ExtraMaterial();
         ReflectionTestUtils.setField(material, "id", id);
-        material.setType("tipo");
+        material.setTitle("tipo");
         material.setUrl("https://example.com/resource");
         material.setModule(module);
         return material;

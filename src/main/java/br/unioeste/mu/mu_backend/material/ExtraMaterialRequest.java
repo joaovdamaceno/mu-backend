@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ExtraMaterialRequest {
 
-    @NotBlank(message = "Tipo é obrigatório")
-    private String type;
+    @NotBlank(message = "Título é obrigatório")
+    private String title;
 
     @NotBlank(message = "URL é obrigatória")
     @HttpOrHttpsUrl(message = "URL deve ser válida e usar http:// ou https://")
@@ -23,7 +23,7 @@ public class ExtraMaterialRequest {
     }
 
     public void applyTo(ExtraMaterial material, Module module) {
-        material.setType(normalizeRequired(type));
+        material.setTitle(normalizeRequired(title));
         material.setUrl(normalizeRequired(url));
         material.setModule(module);
     }
@@ -32,12 +32,12 @@ public class ExtraMaterialRequest {
         return value == null ? null : value.trim();
     }
 
-    public String getType() {
-        return type;
+    public String getTitle() {
+        return title;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUrl() {

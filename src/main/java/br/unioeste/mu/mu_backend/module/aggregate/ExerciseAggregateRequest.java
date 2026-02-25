@@ -14,9 +14,6 @@ public class ExerciseAggregateRequest {
     @NotBlank(message = "Título é obrigatório")
     private String title;
 
-    @NotBlank(message = "Nome do juiz online é obrigatório")
-    private String ojName;
-
     @NotBlank(message = "URL do juiz online é obrigatória")
     private String ojUrl;
 
@@ -31,7 +28,6 @@ public class ExerciseAggregateRequest {
     public Exercise toExercise(Module module) {
         Exercise exercise = new Exercise();
         exercise.setTitle(this.title);
-        exercise.setOjName(this.ojName);
         exercise.setOjUrl(this.ojUrl);
         exercise.setDifficulty(this.difficulty);
         exercise.setTags(this.tags);
@@ -47,13 +43,6 @@ public class ExerciseAggregateRequest {
         this.title = title;
     }
 
-    public String getOjName() {
-        return ojName;
-    }
-
-    public void setOjName(String ojName) {
-        this.ojName = ojName;
-    }
 
     public String getOjUrl() {
         return ojUrl;

@@ -43,8 +43,6 @@ class ModuleControllerFullEndpointIntegrationTest {
     private LessonAggregateRequest buildLesson() {
         LessonAggregateRequest lesson = new LessonAggregateRequest();
         lesson.setTitle("Lição");
-        lesson.setSlug("licao-endpoint-full");
-        lesson.setSummary("Resumo");
         lesson.setVideoUrl("https://example.com/video");
         lesson.setOrderIndex(1);
         return lesson;
@@ -53,7 +51,6 @@ class ModuleControllerFullEndpointIntegrationTest {
     private ExerciseAggregateRequest buildExerciseWithTags() {
         ExerciseAggregateRequest exercise = new ExerciseAggregateRequest();
         exercise.setTitle("Exercício");
-        exercise.setOjName("Beecrowd");
         exercise.setOjUrl("https://judge.example.com/problems/10");
         exercise.setDifficulty(ExerciseDifficulty.MEDIUM);
         exercise.setTags(List.of("arrays", "sorting"));
