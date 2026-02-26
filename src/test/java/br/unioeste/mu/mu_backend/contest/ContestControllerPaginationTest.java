@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -91,7 +92,7 @@ class ContestControllerPaginationTest {
     private Contest contest(String name, LocalDateTime startDateTime) {
         Contest contest = new Contest();
         contest.setName(name);
-        contest.setDurationMinutes(120);
+        contest.setDurationMinutes(Duration.ofMinutes(120));
         contest.setStartDateTime(startDateTime);
         contest.setTeamBased(true);
         contest.setCodeforcesMirrorUrl("https://codeforces.com");

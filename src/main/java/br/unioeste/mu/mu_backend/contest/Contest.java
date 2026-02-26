@@ -3,8 +3,8 @@ package br.unioeste.mu.mu_backend.contest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,9 +20,8 @@ public class Contest {
     private String name;
 
     @NotNull(message = "Duração é obrigatória")
-    @Positive(message = "Duração deve ser maior que zero")
-    @Column(name = "duration_minutes", nullable = false)
-    private Integer durationMinutes;
+    @Column(name = "duration_minutes", nullable = false, columnDefinition = "interval")
+    private Duration durationMinutes;
 
     @NotNull(message = "Data e horário de início são obrigatórios")
     @Column(name = "start_datetime", nullable = false)
@@ -64,11 +63,11 @@ public class Contest {
         this.name = name;
     }
 
-    public Integer getDurationMinutes() {
+    public Duration getDurationMinutes() {
         return durationMinutes;
     }
 
-    public void setDurationMinutes(Integer durationMinutes) {
+    public void setDurationMinutes(Duration durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
 

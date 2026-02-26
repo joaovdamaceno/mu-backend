@@ -1,11 +1,12 @@
 package br.unioeste.mu.mu_backend.contest;
 
 import br.unioeste.mu.mu_backend.shared.validation.HttpOrHttpsUrl;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class ContestRequest {
@@ -15,8 +16,7 @@ public class ContestRequest {
     private String name;
 
     @NotNull(message = "Duração é obrigatória")
-    @Positive(message = "Duração deve ser maior que zero")
-    private Integer durationMinutes;
+    private Duration durationMinutes;
 
     @NotNull(message = "Data e horário de início são obrigatórios")
     private LocalDateTime startDateTime;
@@ -52,15 +52,20 @@ public class ContestRequest {
         return name;
     }
 
+    @AssertTrue(message = "Duração deve ser maior que zero")
+    public boolean isDurationMinutesPositive() {
+        return durationMinutes == null || durationMinutes.isPositive();
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public Integer getDurationMinutes() {
+    public Duration getDurationMinutes() {
         return durationMinutes;
     }
 
-    public void setDurationMinutes(Integer durationMinutes) {
+    public void setDurationMinutes(Duration durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
 

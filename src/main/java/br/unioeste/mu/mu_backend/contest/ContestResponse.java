@@ -1,12 +1,13 @@
 package br.unioeste.mu.mu_backend.contest;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class ContestResponse {
 
     private final Long id;
     private final String name;
-    private final Integer durationMinutes;
+    private final Duration durationMinutes;
     private final LocalDateTime startDateTime;
     private final boolean teamBased;
     private final String codeforcesMirrorUrl;
@@ -36,7 +37,7 @@ public class ContestResponse {
         return name;
     }
 
-    public Integer getDurationMinutes() {
+    public Duration getDurationMinutes() {
         return durationMinutes;
     }
 

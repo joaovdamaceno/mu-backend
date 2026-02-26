@@ -18,6 +18,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -182,7 +183,7 @@ class RequestUrlValidationAndNormalizationTest {
     private ContestRequest buildValidContestRequest() {
         ContestRequest request = new ContestRequest();
         request.setName("Contest");
-        request.setDurationMinutes(120);
+        request.setDurationMinutes(Duration.ofMinutes(120));
         request.setStartDateTime(LocalDateTime.now().plusDays(1));
         request.setCodeforcesMirrorUrl("https://mirror.example.com/contest");
         return request;
